@@ -1,6 +1,6 @@
 import {StyleSheet, TouchableOpacity, ViewStyle} from 'react-native';
 import StyledText from './Text';
-import {colors, spacing} from '../styles/base';
+import {colors, fontSize, spacing} from '../styles/base';
 
 type Props = {
   text: string;
@@ -11,7 +11,7 @@ type Props = {
 const TextButton: React.FC<Props> = ({text, onPress, customStyles}) => {
   return (
     <TouchableOpacity style={[customStyles]} onPress={onPress}>
-      <StyledText text={text} fontSize={12} style={{color: colors.primary}} />
+      <StyledText text={text} fontSize={fontSize.h5} style={{color: colors.primary}} />
     </TouchableOpacity>
   );
 };

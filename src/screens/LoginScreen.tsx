@@ -4,7 +4,14 @@ import * as React from 'react';
 import {View, StyleSheet, ScrollView, KeyboardAvoidingView} from 'react-native';
 import {LoginScreenProps} from '../types/screen-props';
 import Input from '../components/Input';
-import {spacing, colors, borderRadius, boxShadow} from '../styles/base';
+import {
+  spacing,
+  colors,
+  borderRadius,
+  boxShadow,
+  utilityStyles,
+  fontSize,
+} from '../styles/base';
 import {getKeyboardBehaviour} from '../helpers/common-functions';
 import StyledText from '../components/Text';
 import Button from '../components/button';
@@ -110,12 +117,16 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
       behavior={getKeyboardBehaviour()}
       style={styles.keyboardAvoidingView}>
       <ScrollView
-        contentContainerStyle={styles.container}
+        contentContainerStyle={[utilityStyles.container, styles.container]}
         keyboardShouldPersistTaps="handled">
         <View
           style={styles.innerContainer}
           pointerEvents={isLoading ? 'none' : 'auto'}>
-          <StyledText text="Teacher Login" fontSize={24} style={styles.title} />
+          <StyledText
+            text="Teacher Login"
+            fontSize={fontSize.header}
+            style={styles.title}
+          />
           <View style={styles.toggleContainer}>
             <View style={styles.buttonContainer}>
               <Button
@@ -196,10 +207,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
-    flexGrow: 1,
     justifyContent: 'center',
-    padding: spacing.medium,
-    backgroundColor: colors.background,
   },
   innerContainer: {
     backgroundColor: colors.white,
@@ -229,7 +237,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.error,
-    fontSize: 14,
     marginVertical: spacing.small,
     textAlign: 'center',
   },

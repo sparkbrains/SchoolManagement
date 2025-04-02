@@ -1,17 +1,18 @@
 import {StyleSheet} from 'react-native';
+import {getFontSize} from '../helpers/font';
 
 const colors = {
-  primary: '#4A90E2',
-  secondary: '#50E3C2',
-  accent: '#F5A623',
-  background: '#F2F2F2',
-  textPrimary: '#4A4A4A',
-  textSecondary: '#9B9B9B',
-  error: '#D0021B',
-  success: '#7ED321',
-  warning: '#F8E71C',
-  border: '#ccc',
-  white: '#fff',
+  primary: '#1565C0',
+  secondary: '#2E7D32',
+  accent: '#FFA726',
+  background: '#F9FAFB',
+  textPrimary: '#263238',
+  textSecondary: '#607D8B',
+  error: '#D32F2F',
+  success: '#388E3C',
+  warning: '#FBC02D',
+  border: '#B0BEC5',
+  white: '#FFFFFF',
 };
 
 const spacing = {
@@ -36,56 +37,47 @@ const borderRadius = {
   full: 9999, // for fully rounded corners
 };
 
-const styles = StyleSheet.create({
+const fontSize = {
+  header: getFontSize(24),
+  h1: getFontSize(20),
+  h2: getFontSize(18),
+  h3: getFontSize(16),
+  h4: getFontSize(14),
+  h5: getFontSize(12),
+  h6: getFontSize(10),
+  smallText: getFontSize(8),
+};
+
+const utilityStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
     padding: spacing.medium,
   },
   header: {
-    fontSize: 24,
     fontWeight: 'bold',
     color: colors.primary,
     marginBottom: spacing.large,
   },
-  text: {
-    fontSize: 16,
-    color: colors.textPrimary,
-    marginBottom: spacing.small,
-  },
-  button: {
-    backgroundColor: colors.primary,
-    padding: spacing.medium,
-    borderRadius: 4,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   input: {
+    height: 40,
+    borderColor: colors.border,
     borderWidth: 1,
-    borderColor: colors.textSecondary,
-    padding: spacing.small,
-    marginBottom: spacing.medium,
-    borderRadius: 4,
+    borderRadius: borderRadius.small,
+    paddingHorizontal: spacing.small,
+    color: colors.textPrimary,
   },
   errorText: {
     color: colors.error,
-    fontSize: 14,
-    marginTop: spacing.small,
   },
   successText: {
     color: colors.success,
-    fontSize: 14,
     marginTop: spacing.small,
   },
   warningText: {
     color: colors.warning,
-    fontSize: 14,
     marginTop: spacing.small,
   },
 });
 
-export {colors, spacing, styles, borderRadius, boxShadow};
+export {colors, spacing, utilityStyles, borderRadius, boxShadow, fontSize};

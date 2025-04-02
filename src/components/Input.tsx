@@ -6,7 +6,7 @@ import {
   KeyboardType,
   ViewStyle,
 } from 'react-native';
-import {borderRadius, colors, spacing} from '../styles/base';
+import {borderRadius, colors, spacing, utilityStyles} from '../styles/base';
 import StyledText from './Text';
 
 interface InputProps {
@@ -40,7 +40,7 @@ const Input: React.FC<InputProps> = ({
     <View style={[styles.container, customStyles]}>
       <StyledText text={label} fontSize={16} style={styles.label} />
       <TextInput
-        style={[styles.input, errorText && styles.inputError]}
+        style={[utilityStyles.input, errorText && styles.inputError]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}

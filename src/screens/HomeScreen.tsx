@@ -4,6 +4,7 @@ import {View, StyleSheet, ScrollView} from 'react-native';
 import {HomeScreenProps} from '../types/screen-props';
 import StyledText from '../components/Text'; // Make sure to import the StyledText component
 import Button from '../components/button';
+import {fontSize} from '../styles/base';
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const handleLogout = async () => {
@@ -16,47 +17,47 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       <View style={styles.header}>
         <StyledText
           text="Welcome, Teacher!"
-          fontSize={24}
+          fontSize={fontSize.header}
           style={styles.welcomeText}
         />
       </View>
       <View style={styles.section}>
         <StyledText
           text="Upcoming Classes"
-          fontSize={20}
+          fontSize={fontSize.h1}
           style={styles.sectionTitle}
         />
         <View style={styles.card}>
           <StyledText
             text="Math - Class 10"
-            fontSize={16}
+            fontSize={fontSize.h3}
             style={styles.cardTitle}
           />
           <StyledText
             text="Date: 2025-04-05"
-            fontSize={14}
+            fontSize={fontSize.h4}
             style={styles.cardText}
           />
           <StyledText
             text="Time: 10:00 AM - 11:00 AM"
-            fontSize={14}
+            fontSize={fontSize.h4}
             style={styles.cardText}
           />
         </View>
         <View style={styles.card}>
           <StyledText
             text="Science - Class 9"
-            fontSize={16}
+            fontSize={fontSize.h3}
             style={styles.cardTitle}
           />
           <StyledText
             text="Date: 2025-04-06"
-            fontSize={14}
+            fontSize={fontSize.h4}
             style={styles.cardText}
           />
           <StyledText
             text="Time: 12:00 PM - 01:00 PM"
-            fontSize={14}
+            fontSize={fontSize.h4}
             style={styles.cardText}
           />
         </View>
@@ -64,30 +65,30 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       <View style={styles.section}>
         <StyledText
           text="Announcements"
-          fontSize={20}
+          fontSize={fontSize.h1}
           style={styles.sectionTitle}
         />
         <View style={styles.card}>
           <StyledText
             text="School Annual Day"
-            fontSize={16}
+            fontSize={fontSize.h3}
             style={styles.cardTitle}
           />
           <StyledText
             text="Join us for the annual day celebration on 2025-04-20."
-            fontSize={14}
+            fontSize={fontSize.h4}
             style={styles.cardText}
           />
         </View>
         <View style={styles.card}>
           <StyledText
             text="New Exam Schedule"
-            fontSize={16}
+            fontSize={fontSize.h3}
             style={styles.cardTitle}
           />
           <StyledText
             text="The new exam schedule for Class 10 has been released."
-            fontSize={14}
+            fontSize={fontSize.h4}
             style={styles.cardText}
           />
         </View>
@@ -107,7 +108,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   welcomeText: {
-    fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#343a40',
@@ -116,7 +116,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#495057',
@@ -133,13 +132,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardTitle: {
-    fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
     color: '#212529',
   },
   cardText: {
-    fontSize: 14,
     color: '#6c757d',
   },
 });

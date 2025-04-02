@@ -9,7 +9,7 @@ interface Props extends TextProps {
 }
 
 const StyledText: React.FC<Props> = ({text, style, fontSize = 8}) => {
-  return <Text style={[style, {fontSize: getFontSize(fontSize)}]}>{text}</Text>;
+  return <Text style={[style, {fontSize: fontSize}]}>{text}</Text>;
 };
 
 const styles = StyleSheet.create({});

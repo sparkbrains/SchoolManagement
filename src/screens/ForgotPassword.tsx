@@ -9,7 +9,13 @@ import {
 } from 'react-native';
 import {ForgotPasswordScreenProps} from '../types/screen-props';
 import Input from '../components/Input';
-import {spacing, colors, borderRadius, boxShadow} from '../styles/base';
+import {
+  spacing,
+  colors,
+  borderRadius,
+  boxShadow,
+  fontSize,
+} from '../styles/base';
 import {getKeyboardBehaviour, showToast} from '../helpers/common-functions';
 import StyledText from '../components/Text';
 import Button from '../components/button';
@@ -218,7 +224,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
           pointerEvents={isLoading ? 'none' : 'auto'}>
           <StyledText
             text="Forgot Password"
-            fontSize={24}
+            fontSize={fontSize.header}
             style={styles.title}
           />
 
@@ -297,7 +303,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
           {errors?.non_field_errors && (
             <StyledText
               text={errors?.non_field_errors}
-              fontSize={12}
+              fontSize={fontSize.h5}
               style={styles.errorText}
             />
           )}
@@ -318,7 +324,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
               {seconds > 0 ? (
                 <StyledText
                   text={`Resend OTP in ${formatTime(seconds)}`}
-                  fontSize={12}
+                  fontSize={fontSize.h5}
                   style={styles.resendOtp}
                 />
               ) : (
@@ -357,7 +363,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
               {errors?.non_field_errors && (
                 <StyledText
                   text={errors?.non_field_errors}
-                  fontSize={12}
+                  fontSize={fontSize.h5}
                   style={styles.errorText}
                 />
               )}
@@ -424,7 +430,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.error,
-    fontSize: 14,
     marginVertical: spacing.small,
     textAlign: 'center',
   },

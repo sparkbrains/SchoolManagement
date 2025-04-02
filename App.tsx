@@ -30,7 +30,7 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={isLoggedIn ? 'Home' : 'Login'}>
+      <Stack.Navigator initialRouteName={isLoggedIn ? 'Home' : 'Home'}>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen
           name="Login"

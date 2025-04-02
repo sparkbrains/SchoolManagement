@@ -95,6 +95,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
   };
 
   const handleForgotPassword = () => {
+    setData(initialState);
+    setErrors({});
     navigation.navigate('ForgotPassword');
   };
 

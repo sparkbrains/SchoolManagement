@@ -13,7 +13,7 @@ export const validateEmail = (email: string): string => {
 export const validatePassword = (password: string): string => {
   const trimmedPassword = password.trim();
   const regex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   return regex.test(trimmedPassword)
     ? ''
     : 'Password must be at least 8 characters long, and include an upper case letter, a lower case letter, a number, and a special character.';

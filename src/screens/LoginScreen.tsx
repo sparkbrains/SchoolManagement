@@ -101,6 +101,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
   };
 
   const toggleSelection = (allow: boolean): void => {
+    setErrors({});
     setUsePhoneLogin(allow);
     setData(initialState);
   };

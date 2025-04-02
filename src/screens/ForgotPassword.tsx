@@ -76,6 +76,12 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
     setErrors({});
     handleSendOtp();
     setOtpSent(false);
+    setData(prevState => {
+      return {
+        ...prevState,
+        otp: '',
+      };
+    });
   };
 
   const handleChange = (type: string, value: string): void => {

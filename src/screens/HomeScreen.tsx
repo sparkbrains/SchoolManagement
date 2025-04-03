@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as React from 'react';
-import {StyleSheet, ScrollView} from 'react-native';
+import {StyleSheet, ScrollView, View, Image} from 'react-native';
 import {HomeScreenProps} from '../types/screen-props';
 import StyledText from '../components/Text';
 import {useState, useEffect} from 'react';
@@ -64,7 +64,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={utilityStyles.container}>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.logoContainer}>
+        <Image
+          source={require('../assets/school-logo.png')}
+          resizeMode="contain"
+          style={styles.logo}
+        />
+      </View>
       <StyledText
         text="Welcome, Teacher!"
         fontSize={fontSize.h1}
@@ -96,6 +103,15 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     marginTop: spacing.large,
+  },
+  logoContainer: {alignItems: 'center', padding: spacing.large},
+
+  logo: {
+    width: 150,
+    height: 150,
+  },
+  scrollContainer: {
+    padding: spacing.medium,
   },
 });
 

@@ -1,29 +1,17 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React, {useEffect} from 'react';
+import React from 'react';
 import HomeScreen from './src/screens/HomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPassword';
 import {RootStackParamList} from './src/types/screen-props';
-import {useState} from 'react';
 import CameraView from './src/screens/CameraView';
+import {AuthProvider, useAuth} from './src/components/context/AuthContext';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function App(): React.JSX.Element {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const token = await AsyncStorage.getItem('userToken');
-      setIsLoggedIn(!!token);
-      setIsLoading(false);
-    };
-
-    checkLoginStatus();
-  }, []);
+  const {isLoggedIn, isLoading} = useAuth();
 
   if (isLoading) {
     return <></>;
@@ -31,7 +19,7 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={isLoggedIn ? 'Home' : 'Home'}>
+      <Stack.Navigator initialRouteName={isLoggedIn ? 'Login' : 'Login'}>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen
           name="Login"
@@ -53,4 +41,10 @@ function App(): React.JSX.Element {
   );
 }
 
-export default App;
+export default function AppWrapper(): React.JSX.Element {
+  return (
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  );
+}

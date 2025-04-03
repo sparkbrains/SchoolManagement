@@ -5,6 +5,7 @@ export type RootStackParamList = {
   Home: undefined;
   Login: undefined;
   ForgotPassword: undefined;
+  CameraView: undefined;
 };
 
 type ScreenNavigationProp<T extends keyof RootStackParamList> =
@@ -23,3 +24,4 @@ export type ScreenProps<T extends keyof RootStackParamList> = {
 export type HomeScreenProps = ScreenProps<'Home'>;
 export type LoginScreenProps = ScreenProps<'Login'>;
 export type ForgotPasswordScreenProps = ScreenProps<'ForgotPassword'>;
+export type CameraScreenProps = ScreenProps<'CameraView'>;

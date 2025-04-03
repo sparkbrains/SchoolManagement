@@ -37,11 +37,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const handlePunchIn = async () => {
     const isPermissionProvided = await checkPermission('camera');
     if (isPermissionProvided === 'ALLOWED') {
-      Fetch('api-url', {}, {method: 'post'}).then(res => {
-        if (res.status) {
-          showToast('Punch in successful');
-        }
-      });
+      navigation.navigate('CameraView');
+      // Fetch('api-url', {}, {method: 'post'}).then(res => {
+      //   if (res.status) {
+      //     showToast('Punch in successful');
+      //   }
+      // });
     } else {
       setShowPermissionPopup(true);
     }
@@ -58,7 +59,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     } else {
       setShowPermissionPopup(true);
     }
-  };  
+  };
 
   return (
     <ScrollView contentContainerStyle={utilityStyles.container}>
@@ -73,6 +74,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           subject={classInfo.subject}
           className={classInfo.className}
           timing={classInfo.timing}
+          handlePunchIn={handlePunchIn}
         />
       ))}
 

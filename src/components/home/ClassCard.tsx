@@ -8,9 +8,15 @@ interface CardProps {
   subject: string;
   className: string;
   timing: string;
+  handlePunchIn: () => void;
 }
 
-const Card: React.FC<CardProps> = ({subject, className, timing}) => {
+const Card: React.FC<CardProps> = ({
+  subject,
+  className,
+  timing,
+  handlePunchIn,
+}) => {
   return (
     <View style={styles.card}>
       <StyledText
@@ -24,7 +30,11 @@ const Card: React.FC<CardProps> = ({subject, className, timing}) => {
         style={styles.cardText}
       />
       <View style={styles.buttonContainer}>
-        <Button title="Punch In" onPress={() => {}} style={styles.button} />
+        <Button
+          title="Punch In"
+          onPress={handlePunchIn}
+          style={styles.button}
+        />
         <Button
           title="Punch Out"
           onPress={() => {}}

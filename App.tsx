@@ -7,6 +7,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPassword';
 import {RootStackParamList} from './src/types/screen-props';
 import {useState} from 'react';
+import CameraView from './src/screens/CameraView';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -40,6 +41,11 @@ function App(): React.JSX.Element {
         <Stack.Screen
           name="ForgotPassword"
           component={ForgotPasswordScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="CameraView"
+          component={CameraView}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

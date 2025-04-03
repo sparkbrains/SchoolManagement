@@ -21,6 +21,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Text} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {PhotoFile} from 'react-native-vision-camera';
+import Fetch from '../helpers/fetch';
 
 const CameraView = () => {
   const {hasPermission, requestPermission} = useCameraPermission();
@@ -88,9 +89,11 @@ const CameraView = () => {
   };
 
   const handleConfirm = () => {
-    // Here you can process the capturedPhoto, e.g., upload it to a server
-    // For now, we'll just log the photo object
     Alert.alert('Photo Confirmed', 'Photo confirmed successfully!');
+    // Fetch('api-url', {}, {method: 'post'}).then(res => {
+    //   if (res.status) {
+    //   }
+    // });
     setCapturedPhoto(null);
     navigation.goBack();
   };
@@ -214,7 +217,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
-    backgroundColor: colors.accent,
+    backgroundColor: 'lightgray',
     justifyContent: 'center',
     alignItems: 'center',
   },

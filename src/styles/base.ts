@@ -13,6 +13,7 @@ const colors = {
   warning: '#FBC02D',
   border: '#B0BEC5',
   white: '#FFFFFF',
+
 };
 
 const spacing = {

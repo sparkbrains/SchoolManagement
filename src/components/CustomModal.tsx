@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {Modal, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {colors} from '../styles/base';
+import {colors, fontSize, utilityStyles} from '../styles/base';
+import StyledText from './Text';
+import Button from './button';
 
 interface CustomModalProps {
   visible: boolean;
@@ -29,30 +31,35 @@ const CustomModal: React.FC<CustomModalProps> = ({
       animationType="slide"
       visible={visible}
       onRequestClose={onRequestClose}>
-      <View style={styles.modalOverlay}>
+      <View style={utilityStyles.modalOverlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.text}>{text}</Text>
+          <StyledText
+            text={title}
+            style={styles.title}
+            fontSize={fontSize.h2}
+          />
+          <StyledText text={text} style={styles.text} fontSize={fontSize.h4} />
           <View style={styles.buttonContainer}>
-            {secondaryButtonText ? (
+            {secondaryButtonText && onSecondaryButtonPress ? (
               <>
-                <TouchableOpacity
-                  style={[styles.button, styles.secondaryButton]}
-                  onPress={onSecondaryButtonPress}>
-                  <Text style={styles.buttonText}>{secondaryButtonText}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.button, styles.primaryButton]}
-                  onPress={onPrimaryButtonPress}>
-                  <Text style={styles.buttonText}>{primaryButtonText}</Text>
-                </TouchableOpacity>
+                <Button
+                  filled={false}
+                  title={secondaryButtonText}
+                  onPress={onSecondaryButtonPress}
+                  style={{width: '45%'}}
+                />
+                <Button
+                  title={primaryButtonText}
+                  onPress={onPrimaryButtonPress}
+                  style={{width: '45%'}}
+                />
               </>
             ) : (
-              <TouchableOpacity
-                style={[styles.button, styles.fullWidthButton]}
-                onPress={onPrimaryButtonPress}>
-                <Text style={styles.buttonText}>{primaryButtonText}</Text>
-              </TouchableOpacity>
+              <Button
+                title={primaryButtonText}
+                onPress={onPrimaryButtonPress}
+                style={{marginHorizontal: 'auto', width: '50%'}}
+              />
             )}
           </View>
         </View>
@@ -62,15 +69,9 @@ const CustomModal: React.FC<CustomModalProps> = ({
 };
 
 const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
   modalContainer: {
     width: '80%',
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',

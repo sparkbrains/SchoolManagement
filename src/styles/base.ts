@@ -13,7 +13,6 @@ const colors = {
   warning: '#FBC02D',
   border: '#B0BEC5',
   white: '#FFFFFF',
-
 };
 
 const spacing = {
@@ -78,6 +77,12 @@ const utilityStyles = StyleSheet.create({
   warningText: {
     color: colors.warning,
     marginTop: spacing.small,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 });
 

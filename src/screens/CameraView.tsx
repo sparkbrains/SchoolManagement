@@ -6,22 +6,22 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
-  Image,
+  BackHandler,
 } from 'react-native';
-import {colors, spacing} from '../styles/base';
+import {colors, fontSize, spacing} from '../styles/base';
 import {
   Camera,
-  CameraDevice,
   CameraPosition,
   useCameraDevice,
   useCameraPermission,
-  useCameraDevices,
 } from 'react-native-vision-camera';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {Text} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {PhotoFile} from 'react-native-vision-camera';
-import Fetch from '../helpers/fetch';
+import {convertImageFormat, showToast} from '../helpers/common-functions';
+import ImagePreview from '../components/camera/ImagePreview';
+import StyledText from '../components/Text';
+import CustomModal from '../components/CustomModal';
 
 const CameraView = () => {
   const {hasPermission, requestPermission} = useCameraPermission();
@@ -29,36 +29,45 @@ const CameraView = () => {
   const [currentCamera, setCurrentCamera] = useState<CameraPosition>('front');
   const [isTakingPhoto, setIsTakingPhoto] = useState(false);
   const [capturedPhoto, setCapturedPhoto] = useState<PhotoFile | null>(null);
+  const [isUploading, setIsUploading] = useState(false); // New state for upload status
+  const [showModal, setShowModal] = useState(false);
+
   const camera = useRef<Camera>(null);
-  const devices = useCameraDevices();
   const device = useCameraDevice(currentCamera);
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (hasPermission === false) {
+    const backAction = () => {
+      if (isUploading) {
+        return true;
+      }
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove(); // Cleanup the back handler
+  }, [isUploading]);
+
+  const handleShowSettings = () => {
+    Linking.openSettings();
+    navigation.goBack();
+  };
+
+  useEffect(() => {
+    if (!hasPermission) {
       requestPermission().then(newPermission => {
         if (!newPermission) {
-          Alert.alert(
-            'Camera Permission',
-            'Camera permission is required to use this feature. Please enable it in Settings.',
-            [
-              {
-                text: 'Cancel',
-                style: 'cancel',
-              },
-              {
-                text: 'Settings',
-                onPress: () => Linking.openSettings(),
-              },
-            ],
-            {cancelable: false},
-          );
+          setShowModal(true);
           setIsPermissionProvided(false);
         } else {
           setIsPermissionProvided(true);
         }
       });
-    } else if (hasPermission === true) {
+    } else if (hasPermission) {
       setIsPermissionProvided(true);
     }
   }, [hasPermission]);
@@ -70,10 +79,8 @@ const CameraView = () => {
       const photo = await camera.current.takePhoto({
         flash: 'off',
       });
-      console.log('photo', photo);
       setCapturedPhoto(photo);
     } catch (error) {
-      console.error('Error taking photo:', error);
       Alert.alert('Error', 'Failed to capture photo.');
     } finally {
       setIsTakingPhoto(false);
@@ -88,108 +95,139 @@ const CameraView = () => {
     setCapturedPhoto(null);
   };
 
-  const handleConfirm = () => {
-    Alert.alert('Photo Confirmed', 'Photo confirmed successfully!');
-    // Fetch('api-url', {}, {method: 'post'}).then(res => {
-    //   if (res.status) {
-    //   }
-    // });
-    setCapturedPhoto(null);
-    navigation.goBack();
+  const handleConfirm = async () => {
+    setIsUploading(true); // Start uploading
+    try {
+      // Simulate API call with a 3-second delay
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      const file = convertImageFormat(capturedPhoto?.path as string);
+
+      // Fetch('api-url', {file: file}, {method: 'post', inFormData: true}).then(res => {
+      //   if (res.status) {
+      //     console.log('Image Uploaded successfully');
+      //   } else {
+      //     console.error('Error in uploading image===', res);
+
+      //   }
+      // });
+
+      showToast('Photo uploaded successfully!');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to upload photo.');
+    } finally {
+      setIsUploading(false);
+      setCapturedPhoto(null);
+      navigation.goBack();
+    }
   };
 
   const handleFlipCamera = () => {
     setCurrentCamera(prevCamera => (prevCamera === 'front' ? 'back' : 'front'));
   };
 
-  if (!isPermissionProvided) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Camera Permission Required</Text>
-      </View>
-    );
-  }
+  const handleCancel = () => {
+    setShowModal(false);
+    navigation.goBack();
+  };
+
+  // if (!isPermissionProvided) {
+  //   return (
+  //     <View style={styles.blankScreen}>
+  //       <Icon name="camera" style={styles.icon} />
+  //       <StyledText fontSize={fontSize.h4} text="Camera Permission Required" />
+  //     </View>
+  //   );
+  // }
 
   if (!device) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>No camera device found.</Text>
+      <View style={styles.blankScreen}>
+        <StyledText fontSize={fontSize.h4} text="No camera device found." />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      {capturedPhoto ? (
+    <>
+      {isPermissionProvided ? (
         <View style={styles.previewContainer}>
-          <Image
-            source={{uri: `file://${capturedPhoto.path}`}}
-            style={styles.previewImage}
-          />
-          <View style={styles.previewButtonContainer}>
-            <TouchableOpacity
-              style={styles.retakeButton}
-              onPress={handleRetake}>
-              <Icon name="refresh" size={30} color={colors.white} />
-              <Text style={styles.buttonText}>Retake</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.confirmButton}
-              onPress={handleConfirm}>
-              <Icon name="check" size={30} color={colors.white} />
-              <Text style={styles.buttonText}>Confirm</Text>
-            </TouchableOpacity>
-          </View>
+          {capturedPhoto ? (
+            <ImagePreview
+              capturedPhoto={capturedPhoto}
+              handleRetake={handleRetake}
+              isUploading={isUploading}
+              handleConfirm={handleConfirm}
+            />
+          ) : (
+            <>
+              <Camera
+                ref={camera}
+                style={StyleSheet.absoluteFill}
+                device={device}
+                isActive={true}
+                photo={true}
+              />
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.captureButton,
+                    isTakingPhoto && styles.disabledCaptureButton,
+                  ]}
+                  onPress={handleTakePhoto}
+                  disabled={isTakingPhoto}>
+                  {isTakingPhoto ? (
+                    <ActivityIndicator size="small" color={colors.white} />
+                  ) : (
+                    <Icon name="camera-alt" size={30} color={colors.white} />
+                  )}
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={handleClose}>
+                <Icon name="close" size={30} color={colors.white} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.flipButton}
+                onPress={handleFlipCamera}>
+                <Icon name="flip-camera-ios" size={30} color={colors.white} />
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       ) : (
-        <>
-          <Camera
-            ref={camera}
-            style={StyleSheet.absoluteFill}
-            device={device}
-            isActive={true}
-            photo={true}
-          />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[
-                styles.captureButton,
-                isTakingPhoto && styles.disabledCaptureButton,
-              ]}
-              onPress={handleTakePhoto}
-              disabled={isTakingPhoto}>
-              {isTakingPhoto ? (
-                <ActivityIndicator size="small" color={colors.white} />
-              ) : (
-                <Icon name="camera-alt" size={30} color={colors.white} />
-              )}
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-            <Icon name="close" size={30} color={colors.white} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.flipButton}
-            onPress={handleFlipCamera}>
-            <Icon name="flip-camera-ios" size={30} color={colors.white} />
-          </TouchableOpacity>
-        </>
+        <View style={styles.blankScreen}></View>
       )}
-    </View>
+
+      <CustomModal
+        visible={showModal}
+        title="Camera Permission Required"
+        text="Camera permission is required to use this feature. Please enable it in Settings."
+        primaryButtonText="Settings"
+        secondaryButtonText="Cancel"
+        onPrimaryButtonPress={handleShowSettings}
+        onRequestClose={handleCancel}
+        onSecondaryButtonPress={handleCancel}
+      />
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  icon: {
+    fontSize: 50,
+    marginBottom: 10,
+  },
+  previewContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  loadingContainer: {
+  blankScreen: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   buttonContainer: {
     position: 'absolute',
@@ -203,7 +241,7 @@ const styles = StyleSheet.create({
     padding: spacing.large,
   },
   disabledCaptureButton: {
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
   },
   closeButton: {
     position: 'absolute',
@@ -213,43 +251,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: spacing.medium,
   },
-  previewContainer: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'lightgray',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  previewImage: {
-    width: '100%',
-    height: '80%',
-  },
-  previewButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    padding: spacing.large,
-  },
-  retakeButton: {
-    backgroundColor: colors.primary,
-    padding: spacing.medium,
-    borderRadius: 50,
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 5,
-  },
-  confirmButton: {
-    backgroundColor: colors.primary,
-    padding: spacing.medium,
-    borderRadius: 50,
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 5,
-  },
-  buttonText: {
-    color: colors.white,
-  },
+
   flipButton: {
     position: 'absolute',
     top: 120,

@@ -12,6 +12,7 @@ import Button from '../components/button';
 import Fetch from '../helpers/fetch';
 import {checkPermission} from '../helpers/permisssions';
 import {showToast} from '../helpers/common-functions';
+import CustomModal from '../components/CustomModal';
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [data, setData] = useState();
@@ -35,17 +36,18 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   };
 
   const handlePunchIn = async () => {
-    const isPermissionProvided = await checkPermission('camera');
-    if (isPermissionProvided === 'ALLOWED') {
-      navigation.navigate('CameraView');
-      // Fetch('api-url', {}, {method: 'post'}).then(res => {
-      //   if (res.status) {
-      //     showToast('Punch in successful');
-      //   }
-      // });
-    } else {
-      setShowPermissionPopup(true);
-    }
+    navigation.navigate('CameraView');
+    // const isPermissionProvided = await checkPermission('camera');
+    // if (isPermissionProvided === 'ALLOWED') {
+    //   navigation.navigate('CameraView');
+    //   // Fetch('api-url', {}, {method: 'post'}).then(res => {
+    //   //   if (res.status) {
+    //   //     showToast('Punch in successful');
+    //   //   }
+    //   // });
+    // } else {
+    //   setShowPermissionPopup(true);
+    // }
   };
 
   const handlePunchOut = async () => {

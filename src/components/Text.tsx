@@ -4,8 +4,8 @@ import {getFontSize} from '../helpers/font';
 
 interface Props extends TextProps {
   text: string;
-  fontSize: number;
-  style: StyleProp<TextStyle>;
+  fontSize?: number;
+  style?: StyleProp<TextStyle>;
 }
 
 const StyledText: React.FC<Props> = ({text, style, fontSize = 8}) => {

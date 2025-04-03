@@ -15,6 +15,7 @@ import {
   CameraPosition,
   useCameraDevice,
   useCameraPermission,
+  useCameraDevices,
 } from 'react-native-vision-camera';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Text} from 'react-native';
@@ -28,7 +29,8 @@ const CameraView = () => {
   const [isTakingPhoto, setIsTakingPhoto] = useState(false);
   const [capturedPhoto, setCapturedPhoto] = useState<PhotoFile | null>(null);
   const camera = useRef<Camera>(null);
-  const device: CameraDevice = useCameraDevice(currentCamera) as CameraDevice;
+  const devices = useCameraDevices();
+  const device = useCameraDevice(currentCamera);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -91,6 +93,10 @@ const CameraView = () => {
     Alert.alert('Photo Confirmed', 'Photo confirmed successfully!');
     setCapturedPhoto(null);
     navigation.goBack();
+  };
+
+  const handleFlipCamera = () => {
+    setCurrentCamera(prevCamera => (prevCamera === 'front' ? 'back' : 'front'));
   };
 
   if (!isPermissionProvided) {
@@ -158,6 +164,12 @@ const CameraView = () => {
           </View>
           <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
             <Icon name="close" size={30} color={colors.white} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.flipButton}
+            onPress={handleFlipCamera}>
+            <Icon name="flip-camera-ios" size={30} color={colors.white} />
           </TouchableOpacity>
         </>
       )}
@@ -234,6 +246,14 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: colors.white,
+  },
+  flipButton: {
+    position: 'absolute',
+    top: 120,
+    right: spacing.large,
+    backgroundColor: colors.primary,
+    borderRadius: 50,
+    padding: spacing.medium,
   },
 });
 

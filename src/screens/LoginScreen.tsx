@@ -23,6 +23,7 @@ import {
 } from '../helpers/validationUtils';
 import Fetch from '../helpers/fetch';
 import {arrayString} from '../helpers/array-string';
+import {TeacherManagementIcon} from '../assets/svg-icons';
 
 const initialState = {
   phone_number: '',
@@ -129,6 +130,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
         <View
           style={styles.innerContainer}
           pointerEvents={isLoading ? 'none' : 'auto'}>
+          <View
+            style={{marginHorizontal: 'auto', marginVertical: spacing.large}}>
+            <TeacherManagementIcon size={100} color={colors.primary} />
+          </View>
+
           <StyledText
             text="Teacher Login"
             fontSize={fontSize.header}
@@ -160,7 +166,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
                 handleChange('phone_number', text)
               }
               isRequired={true}
-              placeholder={'Please provide your phone number or email'}
+              placeholder={'Enter phone number or email'}
               // keyboardType={'phone-pad'}
               customStyles={{marginBottom: spacing.medium}}
               errorText={errors?.phone_number}
@@ -224,6 +230,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.medium,
     padding: spacing.large,
     ...boxShadow,
+    justifyContent: 'center',
   },
   title: {
     fontWeight: 'bold',

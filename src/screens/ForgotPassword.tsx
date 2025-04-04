@@ -29,6 +29,7 @@ import Fetch from '../helpers/fetch';
 import {CommonActions} from '@react-navigation/native';
 import {arrayString} from '../helpers/array-string';
 import TextButton from '../components/text-button';
+import {TeacherManagementIcon} from '../assets/svg-icons';
 
 const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
   navigation,
@@ -243,6 +244,10 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
         <View
           style={styles.innerContainer}
           pointerEvents={isLoading ? 'none' : 'auto'}>
+          <View
+            style={{marginHorizontal: 'auto', marginVertical: spacing.large}}>
+            <TeacherManagementIcon size={100} color={colors.primary} />
+          </View>
           <StyledText
             text="Forgot Password"
             fontSize={fontSize.header}

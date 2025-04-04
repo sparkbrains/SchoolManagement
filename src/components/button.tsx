@@ -7,7 +7,7 @@ import {
   GestureResponderEvent,
   ActivityIndicator,
 } from 'react-native';
-import {colors, spacing, borderRadius} from '../styles/base';
+import {colors, spacing, borderRadius, fontSize} from '../styles/base';
 import StyledText from './Text';
 
 interface ButtonProps {
@@ -44,7 +44,7 @@ const Button: React.FC<ButtonProps> = ({
       ) : (
         <StyledText
           text={title}
-          fontSize={16}
+          fontSize={fontSize.h3}
           style={[
             styles.text,
             filled ? styles.filledText : styles.outlineText,

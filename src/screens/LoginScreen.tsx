@@ -4,15 +4,22 @@ import * as React from 'react';
 import {View, StyleSheet, ScrollView, KeyboardAvoidingView} from 'react-native';
 import {LoginScreenProps} from '../types/screen-props';
 import Input from '../components/Input';
-import {spacing, colors, borderRadius, boxShadow} from '../styles/base';
+import {
+  spacing,
+  colors,
+  borderRadius,
+  boxShadow,
+  utilityStyles,
+  fontSize,
+} from '../styles/base';
 import {getKeyboardBehaviour} from '../helpers/common-functions';
 import StyledText from '../components/Text';
 import Button from '../components/button';
 import TextButton from '../components/text-button';
 import {
   validateEmail,
+  validateEmailOrPhone,
   validatePassword,
-  validatePhoneNumber,
 } from '../helpers/validationUtils';
 import Fetch from '../helpers/fetch';
 import {arrayString} from '../helpers/array-string';
@@ -40,7 +47,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
     let error = '';
     switch (type) {
       case 'phone_number':
-        error = validatePhoneNumber(value);
+        // error = validatePhoneNumber(value);
+        error = validateEmailOrPhone(value);
         break;
       case 'email':
         error = validateEmail(value);
@@ -111,13 +119,18 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
       behavior={getKeyboardBehaviour()}
       style={styles.keyboardAvoidingView}>
       <ScrollView
-        contentContainerStyle={styles.container}
+        contentContainerStyle={[utilityStyles.container, styles.container]}
         keyboardShouldPersistTaps="handled">
         <View
           style={styles.innerContainer}
           pointerEvents={isLoading ? 'none' : 'auto'}>
-          <StyledText text="Teacher Login" fontSize={24} style={styles.title} />
-          <View style={styles.toggleContainer}>
+          <StyledText
+            text="Teacher Login"
+            fontSize={fontSize.header}
+            style={styles.title}
+          />
+
+          {/* <View style={styles.toggleContainer}>
             <View style={styles.buttonContainer}>
               <Button
                 onPress={() => toggleSelection(true)}
@@ -132,21 +145,21 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
                 style={styles.toggleButton}
               />
             </View>
-          </View>
+          </View> */}
 
           {usePhoneLogin ? (
             <Input
-              label="Phone number"
+              label="Email / Phone No."
               value={data.phone_number}
               onChangeText={(text: string) =>
                 handleChange('phone_number', text)
               }
               isRequired={true}
-              placeholder={'Enter phone number'}
-              keyboardType={'phone-pad'}
+              placeholder={'Please provide your phone number or email'}
+              // keyboardType={'phone-pad'}
               customStyles={{marginBottom: spacing.medium}}
               errorText={errors?.phone_number}
-              maxLength={10}
+              // maxLength={10}
             />
           ) : (
             <Input
@@ -197,10 +210,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
-    flexGrow: 1,
     justifyContent: 'center',
-    padding: spacing.medium,
-    backgroundColor: colors.background,
   },
   innerContainer: {
     backgroundColor: colors.white,
@@ -230,7 +240,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.error,
-    fontSize: 14,
     marginVertical: spacing.small,
     textAlign: 'center',
   },

@@ -35,6 +35,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
   const [usePhoneLogin, setUsePhoneLogin] = React.useState(true);
   const [errors, setErrors] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (type: string, value: string): void => {
     setData(prevState => ({
@@ -114,6 +115,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
     setData(initialState);
   };
 
+  const handleIconClick = () => {
+    setShowPassword(prevState => !prevState);
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={getKeyboardBehaviour()}
@@ -180,8 +185,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
             onChangeText={(text: string) => handleChange('password', text)}
             isRequired={true}
             placeholder={'Enter password'}
-            secureTextEntry
+            secureTextEntry={!showPassword}
             errorText={errors?.password}
+            iconName={showPassword ? 'eye-off-outline' : 'eye-outline'}
+            handleIconClick={handleIconClick}
           />
 
           <TextButton

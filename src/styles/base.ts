@@ -66,6 +66,7 @@ const utilityStyles = StyleSheet.create({
     borderRadius: borderRadius.small,
     paddingHorizontal: spacing.small,
     color: colors.textPrimary,
+    width: '100%',
   },
   errorText: {
     color: colors.error,

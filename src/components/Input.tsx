@@ -5,9 +5,17 @@ import {
   StyleSheet,
   KeyboardType,
   ViewStyle,
+  TouchableOpacity,
 } from 'react-native';
-import {borderRadius, colors, spacing, utilityStyles} from '../styles/base';
+import {
+  borderRadius,
+  colors,
+  fontSize,
+  spacing,
+  utilityStyles,
+} from '../styles/base';
 import StyledText from './Text';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface InputProps {
   label: string;
@@ -21,6 +29,8 @@ interface InputProps {
   customStyles?: ViewStyle;
   maxLength?: number | undefined;
   editable?: boolean;
+  iconName?: string;
+  handleIconClick?: () => void;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -35,23 +45,40 @@ const Input: React.FC<InputProps> = ({
   maxLength = undefined,
   editable = true,
   customStyles,
+  iconName,
+  handleIconClick = () => {},
 }) => {
   return (
     <View style={[styles.container, customStyles]}>
       <StyledText text={label} fontSize={16} style={styles.label} />
-      <TextInput
-        style={[utilityStyles.input, errorText && styles.inputError]}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        keyboardType={keyboardType}
-        placeholderTextColor={colors.textSecondary}
-        secureTextEntry={secureTextEntry}
-        maxLength={maxLength}
-        editable={editable}
-      />
+      <View style={styles.inputWrapper}>
+        <TextInput
+          style={[
+            utilityStyles.input,
+            errorText && styles.inputError,
+            iconName && styles.inputPaddedRight,
+          ]}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          keyboardType={keyboardType}
+          placeholderTextColor={colors.textSecondary}
+          secureTextEntry={secureTextEntry}
+          maxLength={maxLength}
+          editable={editable}
+        />
+        {iconName && (
+          <TouchableOpacity onPress={handleIconClick} style={styles.icon}>
+            <Icon name={iconName} size={20} color={colors.textSecondary} />
+          </TouchableOpacity>
+        )}
+      </View>
       {isRequired && errorText && (
-        <StyledText text={errorText} fontSize={10} style={styles.errorText} />
+        <StyledText
+          text={errorText}
+          fontSize={fontSize.h6}
+          style={styles.errorText}
+        />
       )}
     </View>
   );
@@ -60,6 +87,13 @@ const Input: React.FC<InputProps> = ({
 const styles = StyleSheet.create({
   container: {
     // marginBottom: spacing.medium,
+  },
+  inputPaddedRight: {
+    paddingRight: 40,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   label: {
     fontSize: 16,
@@ -80,6 +114,10 @@ const styles = StyleSheet.create({
   errorText: {
     color: colors.error,
     marginTop: 4,
+  },
+  icon: {
+    position: 'absolute',
+    right: 10,
   },
 });
 

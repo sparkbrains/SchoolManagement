@@ -47,6 +47,10 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [seconds, setSeconds] = useState(300); // 5 minutes = 300 seconds
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [showPassword, setShowPassword] = useState({
+    newPassword: false,
+    confirmPassword: false,
+  });
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -201,6 +205,17 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
     );
   };
 
+  const togglePasswordVisibility = (
+    type: 'newPassword' | 'confirmPassword',
+  ) => {
+    setShowPassword(prevState => {
+      return {
+        ...prevState,
+        [type]: !prevState[type],
+      };
+    });
+  };
+
   // Disable the back navigation when loader is true
   useEffect(() => {
     const backAction = () => {
@@ -349,9 +364,13 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
                 onChangeText={(text: string) => handleChange('password', text)}
                 isRequired={true}
                 placeholder={'Enter new password'}
-                secureTextEntry
+                secureTextEntry={!showPassword.newPassword}
                 customStyles={{marginBottom: spacing.medium}}
                 errorText={errors?.password}
+                iconName={
+                  showPassword.newPassword ? 'eye-off-outline' : 'eye-outline'
+                }
+                handleIconClick={() => togglePasswordVisibility('newPassword')}
               />
               <Input
                 label="Confirm Password"
@@ -361,9 +380,17 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
                 }
                 isRequired={true}
                 placeholder={'Confirm new password'}
-                secureTextEntry
+                secureTextEntry={!showPassword.confirmPassword}
                 customStyles={{marginBottom: spacing.medium}}
                 errorText={errors?.confirmPassword}
+                iconName={
+                  showPassword.confirmPassword
+                    ? 'eye-off-outline'
+                    : 'eye-outline'
+                }
+                handleIconClick={() =>
+                  togglePasswordVisibility('confirmPassword')
+                }
               />
 
               {errors?.non_field_errors && (

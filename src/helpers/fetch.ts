@@ -76,20 +76,17 @@ export default function Fetch(
         headers,
       )
         .then((response: {data: any}) => {
-          console.log('api call success===');
           const dataParse = {data: response.data, status: true};
           return dataParse;
         })
         .catch((err: any) => {
           if (err?.response?.status === 500) {
-            console.log('check 1');
             return {err: ['Something Went Wrong'], status: false};
           } else {
             return {...err?.response?.data, status: false};
           }
         });
     } catch (error) {
-      console.log('check 2');
       return {err: ['Something Went Wrong'], status: false};
     }
   };

@@ -4,11 +4,13 @@ import StyledText from '../Text';
 import Button from '../button';
 import {colors, fontSize} from '../../styles/base';
 import Badge from '../Badge';
+import moment from 'moment';
 
 interface CardProps {
   subject: string;
   className: string;
-  timing: string;
+  startTime: string;
+  endTime: string;
   handlePunchIn: () => void;
   status: string;
 }
@@ -16,10 +18,16 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({
   subject,
   className,
-  timing,
+  startTime,
+  endTime,
   status,
   handlePunchIn,
 }) => {
+  const now = moment();
+  const start = moment(startTime, 'HH:mm:ss');
+  const end = moment(endTime, 'HH:mm:ss');
+  const isWithinTime = now.isBetween(start, end);
+
   return (
     <View style={styles.card}>
       <View style={styles.classAndStatus}>
@@ -31,23 +39,28 @@ const Card: React.FC<CardProps> = ({
         <Badge status={status} />
       </View>
       <StyledText
-        text={timing}
+        text={`${moment(startTime, 'HH:mm:ss').format('LT')} - ${moment(
+          endTime,
+          'HH:mm:ss',
+        ).format('LT')}`}
         fontSize={fontSize.h3}
-        style={styles.cardText}
+        style={isWithinTime && styles.cardText}
       />
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Punch In"
-          onPress={handlePunchIn}
-          style={styles.button}
-        />
-        <Button
-          title="Punch Out"
-          onPress={() => {}}
-          style={styles.button}
-          filled={false}
-        />
-      </View>
+      {isWithinTime && (
+        <View style={styles.buttonContainer}>
+          <Button
+            title="Punch In"
+            onPress={handlePunchIn}
+            style={styles.button}
+          />
+          <Button
+            title="Punch Out"
+            onPress={handlePunchIn}
+            style={styles.button}
+            filled={false}
+          />
+        </View>
+      )}
     </View>
   );
 };

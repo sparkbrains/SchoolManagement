@@ -10,12 +10,10 @@ import {classes} from '../static-data/classes';
 import Card from '../components/home/ClassCard';
 import Button from '../components/button';
 import Fetch from '../helpers/fetch';
-import {checkPermission} from '../helpers/permisssions';
 import {showToast} from '../helpers/common-functions';
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [data, setData] = useState();
-  const [showPermissionPopup, setShowPermissionPopup] = useState(false);
 
   const fetchData = () => {
     Fetch('api-url').then(res => {
@@ -39,16 +37,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   };
 
   const handlePunchOut = async () => {
-    const isPermissionProvided = await checkPermission('camera');
-    if (isPermissionProvided === 'ALLOWED') {
-      Fetch('api-url', {}, {method: 'post'}).then(res => {
-        if (res.status) {
-          showToast('Punch out successful');
-        }
-      });
-    } else {
-      setShowPermissionPopup(true);
-    }
+    Fetch('api-url', {}, {method: 'post', inFormData: true}).then(res => {
+      if (res.status) {
+        showToast('Punch out successful');
+      }
+    });
   };
 
   return (
@@ -70,8 +63,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           key={classInfo.id}
           subject={classInfo.subject}
           className={classInfo.className}
-          timing={classInfo.timing}
           status={classInfo.status}
+          startTime={classInfo.startTime}
+          endTime={classInfo.endTime}
           handlePunchIn={handlePunchIn}
         />
       ))}

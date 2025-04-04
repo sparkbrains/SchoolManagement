@@ -1,6 +1,8 @@
 # OSX
 #
 .DS_Store
+*.swp
+*.log
 
 # Xcode
 #
@@ -75,3 +77,27 @@ yarn-error.log
 !.yarn/versions
 
 .env
+
+# Android Build Artifacts
+android/build/
+android/.gradle/
+android/app/build/
+android/app/.cxx/
+android/app/.externalNativeBuild/
+
+# iOS Build Artifacts
+ios/build/
+ios/Pods/
+ios/*.xcworkspace/
+ios/DerivedData/
+
+android/gradle/wrapper/gradle-wrapper.properties
+
+android/local.properties
+
+# Exclude all files in build directories, except for the fonts.gradle change.
+!android/app/build.gradle
+
+# Exclude all files in res directories, except for the icons.
+!android/app/src/main/res/mipmap-*/ 
+!android/app/src/main/res/drawable/

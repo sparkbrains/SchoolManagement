@@ -5,7 +5,7 @@ import {HomeScreenProps} from '../types/screen-props';
 import StyledText from '../components/Text';
 import {useState, useEffect} from 'react';
 
-import {fontSize, spacing} from '../styles/base';
+import {borderRadius, colors, fontSize, spacing} from '../styles/base';
 import {classes} from '../static-data/classes';
 import Card from '../components/home/ClassCard';
 import Button from '../components/button';
@@ -84,17 +84,22 @@ const styles = StyleSheet.create({
     marginBottom: spacing.large,
     textAlign: 'center',
   },
+
   logoutButton: {
     marginTop: spacing.large,
   },
+
   logoContainer: {alignItems: 'center', padding: spacing.large},
 
   logo: {
     width: 150,
     height: 150,
+    borderRadius: borderRadius.large,
   },
+
   scrollContainer: {
     padding: spacing.medium,
+    flexGrow: 1,
   },
 });
 

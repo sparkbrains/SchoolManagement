@@ -2,7 +2,13 @@ import * as React from 'react';
 import {View, StyleSheet} from 'react-native';
 import StyledText from '../Text';
 import Button from '../button';
-import {colors, fontSize} from '../../styles/base';
+import {
+  borderRadius,
+  boxShadow,
+  colors,
+  fontSize,
+  spacing,
+} from '../../styles/base';
 import Badge from '../Badge';
 import moment from 'moment';
 
@@ -68,14 +74,10 @@ const Card: React.FC<CardProps> = ({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.white,
-    borderRadius: 8,
+    borderRadius: borderRadius.medium,
     padding: 15,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    shadowOffset: {width: 0, height: 2},
-    elevation: 3,
+    ...boxShadow,
   },
   cardTitle: {
     fontWeight: 'bold',

@@ -230,7 +230,6 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.medium,
     padding: spacing.large,
     ...boxShadow,
-    justifyContent: 'center',
   },
   title: {
     fontWeight: 'bold',

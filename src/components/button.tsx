@@ -59,7 +59,7 @@ const Button: React.FC<ButtonProps> = ({
 const styles = StyleSheet.create({
   button: {
     padding: spacing.medium,
-    borderRadius: borderRadius.small,
+    borderRadius: borderRadius.medium,
     alignItems: 'center',
     justifyContent: 'center',
   },

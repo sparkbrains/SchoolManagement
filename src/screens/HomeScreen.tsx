@@ -5,14 +5,13 @@ import {HomeScreenProps} from '../types/screen-props';
 import StyledText from '../components/Text';
 import {useState, useEffect} from 'react';
 
-import {fontSize, spacing, utilityStyles} from '../styles/base';
+import {fontSize, spacing} from '../styles/base';
 import {classes} from '../static-data/classes';
 import Card from '../components/home/ClassCard';
 import Button from '../components/button';
 import Fetch from '../helpers/fetch';
 import {checkPermission} from '../helpers/permisssions';
 import {showToast} from '../helpers/common-functions';
-import CustomModal from '../components/CustomModal';
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [data, setData] = useState();
@@ -37,17 +36,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const handlePunchIn = async () => {
     navigation.navigate('CameraView');
-    // const isPermissionProvided = await checkPermission('camera');
-    // if (isPermissionProvided === 'ALLOWED') {
-    //   navigation.navigate('CameraView');
-    //   // Fetch('api-url', {}, {method: 'post'}).then(res => {
-    //   //   if (res.status) {
-    //   //     showToast('Punch in successful');
-    //   //   }
-    //   // });
-    // } else {
-    //   setShowPermissionPopup(true);
-    // }
   };
 
   const handlePunchOut = async () => {
@@ -83,6 +71,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           subject={classInfo.subject}
           className={classInfo.className}
           timing={classInfo.timing}
+          status={classInfo.status}
           handlePunchIn={handlePunchIn}
         />
       ))}

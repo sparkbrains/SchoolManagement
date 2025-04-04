@@ -3,27 +3,33 @@ import {View, StyleSheet} from 'react-native';
 import StyledText from '../Text';
 import Button from '../button';
 import {colors, fontSize} from '../../styles/base';
+import Badge from '../Badge';
 
 interface CardProps {
   subject: string;
   className: string;
   timing: string;
   handlePunchIn: () => void;
+  status: string;
 }
 
 const Card: React.FC<CardProps> = ({
   subject,
   className,
   timing,
+  status,
   handlePunchIn,
 }) => {
   return (
     <View style={styles.card}>
-      <StyledText
-        text={`${subject} - ${className}`}
-        fontSize={fontSize.h3}
-        style={styles.cardTitle}
-      />
+      <View style={styles.classAndStatus}>
+        <StyledText
+          text={`${subject} - ${className}`}
+          fontSize={fontSize.h3}
+          style={styles.cardTitle}
+        />
+        <Badge status={status} />
+      </View>
       <StyledText
         text={timing}
         fontSize={fontSize.h3}
@@ -72,6 +78,10 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     marginHorizontal: 5,
+  },
+  classAndStatus: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });
 

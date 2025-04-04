@@ -7,6 +7,7 @@ import ForgotPasswordScreen from './src/screens/ForgotPassword';
 import {RootStackParamList} from './src/types/screen-props';
 import CameraView from './src/screens/CameraView';
 import {AuthProvider, useAuth} from './src/components/context/AuthContext';
+import {StatusBar} from 'react-native';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -19,7 +20,8 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={isLoggedIn ? 'Login' : 'Login'}>
+      <StatusBar barStyle="dark-content" backgroundColor="white" />
+      <Stack.Navigator initialRouteName={isLoggedIn ? 'Home' : 'Home'}>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen
           name="Login"

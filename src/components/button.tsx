@@ -35,7 +35,7 @@ const Button: React.FC<ButtonProps> = ({
       style={[
         styles.button,
         filled ? styles.filled : styles.outline,
-        disabled && styles.disabled,
+        disabled && (filled ? styles.disabled : styles.outlineDisabled),
         style,
       ]}
       disabled={disabled || isLoading}>
@@ -48,6 +48,8 @@ const Button: React.FC<ButtonProps> = ({
           style={[
             styles.text,
             filled ? styles.filledText : styles.outlineText,
+            disabled &&
+              (filled ? styles.disabledText : styles.outlineDisabledText),
             textStyle,
           ]}
         />
@@ -83,6 +85,15 @@ const styles = StyleSheet.create({
   },
   outlineText: {
     color: colors.primary,
+  },
+  outlineDisabled: {
+    borderColor: colors.textSecondary,
+  },
+  outlineDisabledText: {
+    color: colors.textSecondary,
+  },
+  disabledText: {
+    color: colors.white,
   },
 });
 

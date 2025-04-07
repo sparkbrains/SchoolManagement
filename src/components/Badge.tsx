@@ -9,12 +9,14 @@ const Badge: React.FC<Props> = ({status}) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Upcoming':
-        return colors.success;
+        return colors.info;
       case 'Ongoing':
-        return colors.success;
-      case 'Completed':
         return colors.accent;
+      case 'Completed':
+        return colors.success;
       case 'Cancelled':
+        return colors.error;
+      case 'Absent':
         return colors.error;
       default:
         return colors.accent;

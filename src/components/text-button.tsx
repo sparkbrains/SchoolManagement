@@ -11,11 +11,13 @@ type Props = {
 const TextButton: React.FC<Props> = ({text, onPress, customStyles}) => {
   return (
     <TouchableOpacity style={[customStyles]} onPress={onPress}>
-      <StyledText text={text} fontSize={fontSize.h5} style={{color: colors.primary}} />
+      <StyledText
+        text={text}
+        fontSize={fontSize.h5}
+        style={{color: colors.primary}}
+      />
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({});
 
 export default TextButton;

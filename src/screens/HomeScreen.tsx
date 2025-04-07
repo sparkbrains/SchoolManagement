@@ -1,6 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as React from 'react';
-import {StyleSheet, ScrollView, View, Image, Dimensions} from 'react-native';
+import {
+  StyleSheet,
+  ScrollView,
+  View,
+  Image,
+  Dimensions,
+  TouchableOpacity,
+  RefreshControl,
+} from 'react-native';
 import {HomeScreenProps} from '../types/screen-props';
 import StyledText from '../components/Text';
 import {useState, useEffect} from 'react';
@@ -11,6 +19,9 @@ import Button from '../components/button';
 import Fetch from '../helpers/fetch';
 import moment from 'moment';
 import {calculateElapsedTime} from '../helpers/common-functions';
+import ScreenLoader from '../components/ScreenLoader';
+import Icon from 'react-native-vector-icons/SimpleLineIcons';
+import CustomModal from '../components/CustomModal';
 
 type ClassType = {
   class_assigned: {
@@ -60,18 +71,26 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [elapsedTime, setElapsedTime] = useState<string>('00:00:00');
   const [startTime, setStartTime] = useState<string | null>(null);
   const [timerRunning, setTimerRunning] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const fetchData = () => {
-    console.log('fetch data===');
-    Fetch('teachers/schedule/today-classes').then(res => {
+    setIsLoading(true);
+    Fetch('teachers/schedule/today-classes').then((res: any) => {
+      console.log('res===', res);
+
+      setIsLoading(false);
       if (res.status) {
-        console.log('res===', res);
         setData(res?.data);
+      } else {
+        // setData(res)
+        setData({
+          data: [],
+          teacher: res?.teacher,
+        });
       }
     });
   };
-
-  console.log('data===', data);
 
   const handleStartTimer = () => {
     setStartTime(moment().format('HH:mm:ss'));
@@ -127,74 +146,106 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       type: type,
       scheduleId: classId,
       onGoBack: (type: string) => {
-        console.log('ongoback called===');
         if (type === 'PUNCH_IN') {
           handleStartTimer();
         } else {
           handleStopTimer();
         }
-        // fetchData();
-        console.log('type===', type, classId);
 
         changeState(type, classId);
       },
     });
   };
 
-  return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      {timerRunning && (
-        <View style={styles.ongoingClassContainer}>
-          <StyledText
-            text={`Ongoing: ${currentClass?.subject?.name} - ${currentClass?.class_assigned?.name}${currentClass?.class_assigned?.section}`}
-            fontSize={fontSize.h3}
-            style={styles.ongoingClassText}
-          />
-          <StyledText
-            text={`Time: ${elapsedTime}`}
-            style={styles.elapsedTimeText}
-            fontSize={fontSize.h5}
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          style={{marginRight: 15}}
+          onPress={() => setShowModal(true)}>
+          <Icon name="logout" size={20} color={colors.primary} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
+  return isLoading ? (
+    <ScreenLoader />
+  ) : (
+    <>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={fetchData} />
+        }>
+        {timerRunning && (
+          <View style={styles.ongoingClassContainer}>
+            <StyledText
+              text={`Ongoing: ${currentClass?.subject?.name} - ${currentClass?.class_assigned?.name}${currentClass?.class_assigned?.section}`}
+              fontSize={fontSize.h3}
+              style={styles.ongoingClassText}
+            />
+            <StyledText
+              text={`Time: ${elapsedTime}`}
+              style={styles.elapsedTimeText}
+              fontSize={fontSize.h5}
+            />
+          </View>
+        )}
+
+        <View style={styles.logoContainer}>
+          <Image
+            source={
+              data?.teacher?.school?.logo
+                ? {uri: data?.teacher?.school?.logo}
+                : require('../assets/school-logo.png')
+            }
+            resizeMode="contain"
+            style={styles.logo}
           />
         </View>
-      )}
-
-      <View style={styles.logoContainer}>
-        <Image
-          source={
-            data?.teacher?.school?.logo
-              ? {uri: data?.teacher?.school?.logo}
-              : require('../assets/school-logo.png')
-          }
-          resizeMode="contain"
-          style={styles.logo}
+        <StyledText
+          text={`Welcome, ${data?.teacher?.name}!`}
+          fontSize={fontSize.h1}
+          style={styles.header}
         />
-      </View>
-      <StyledText
-        text={`Welcome, ${data?.teacher?.name}!`}
-        fontSize={fontSize.h1}
-        style={styles.header}
+        {data?.data.length > 0 ? (
+          data?.data.map(classInfo => (
+            <Card
+              key={classInfo.id}
+              subject={classInfo.subject?.name}
+              className={
+                classInfo?.class_assigned?.name +
+                classInfo?.class_assigned?.section
+              }
+              status={classInfo.status || 'Not Started'}
+              startTime={classInfo.start_time}
+              endTime={classInfo.end_time}
+              handlePunchIn={() => handleNavigate('PUNCH_IN', classInfo?.id)}
+              handlePunchOut={() => handleNavigate('PUNCH_OUT', classInfo?.id)}
+            />
+          ))
+        ) : (
+          <View style={styles.emptyContainer}>
+            <StyledText
+              fontSize={fontSize?.h4}
+              text="Unfortunately no classes has been scheduled for you yet!"
+              style={{textAlign: 'center'}}
+            />
+          </View>
+        )}
+      </ScrollView>
+      <CustomModal
+        visible={showModal}
+        title="Alert!"
+        text="Are you sure you want to logout?"
+        secondaryButtonText="Cancel"
+        primaryButtonText="Logout"
+        onSecondaryButtonPress={() => setShowModal(false)}
+        onPrimaryButtonPress={handleLogout}
+        onRequestClose={() => setShowModal(false)}
       />
-      {data?.data.map(classInfo => (
-        <Card
-          key={classInfo.id}
-          subject={classInfo.subject?.name}
-          className={
-            classInfo?.class_assigned?.name + classInfo?.class_assigned?.section
-          }
-          status={classInfo.status || 'Not Started'}
-          startTime={classInfo.start_time}
-          endTime={classInfo.end_time}
-          handlePunchIn={() => handleNavigate('PUNCH_IN', classInfo?.id)}
-          handlePunchOut={() => handleNavigate('PUNCH_OUT', classInfo?.id)}
-        />
-      ))}
-
-      <Button
-        title="Logout"
-        onPress={handleLogout}
-        style={styles.logoutButton}
-      />
-    </ScrollView>
+    </>
   );
 };
 
@@ -205,7 +256,6 @@ const styles = StyleSheet.create({
   },
 
   ongoingClassContainer: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: colors.primary,
     paddingHorizontal: spacing.large,
@@ -240,6 +290,10 @@ const styles = StyleSheet.create({
     padding: spacing.medium,
     paddingTop: spacing.xLarge + 20,
     flexGrow: 1,
+  },
+  emptyContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
   },
 });
 

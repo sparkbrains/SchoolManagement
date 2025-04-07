@@ -31,6 +31,8 @@ interface InputProps {
   editable?: boolean;
   iconName?: string;
   handleIconClick?: () => void;
+  showLabelIcon?: boolean;
+  handleShowInfo?: () => void;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -47,10 +49,24 @@ const Input: React.FC<InputProps> = ({
   customStyles,
   iconName,
   handleIconClick = () => {},
+  showLabelIcon = false,
+  handleShowInfo,
 }) => {
   return (
     <View style={[styles.container, customStyles]}>
-      <StyledText text={label} fontSize={16} style={styles.label} />
+      <View style={showLabelIcon && styles.labelContainer}>
+        <StyledText text={label} fontSize={16} style={styles.label} />
+        {showLabelIcon && (
+          <TouchableOpacity onPress={handleShowInfo}>
+            <Icon
+              name={'information-circle-outline'}
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+
       <View style={styles.inputWrapper}>
         <TextInput
           style={[
@@ -87,6 +103,10 @@ const Input: React.FC<InputProps> = ({
 const styles = StyleSheet.create({
   container: {
     // marginBottom: spacing.medium,
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    gap: 10,
   },
   inputPaddedRight: {
     paddingRight: 40,

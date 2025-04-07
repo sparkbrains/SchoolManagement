@@ -125,7 +125,7 @@ const CameraView = ({route, navigation}) => {
     } finally {
       setIsUploading(false);
       setCapturedPhoto(null);
-      route.params.onGoBack({type: type});
+      route.params.onGoBack(type);
       navigation.goBack();
     }
   };

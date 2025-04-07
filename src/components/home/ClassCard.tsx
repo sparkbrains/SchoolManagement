@@ -30,7 +30,7 @@ const Card: React.FC<CardProps> = ({
   const end = moment(endTime, 'HH:mm:ss');
   const isWithinTime =
     now.isBetween(start, end) &&
-    (status === 'Upcoming' || status === 'Ongoing') || true;
+    (status === 'Upcoming' || status === 'Ongoing') ;
 
   return (
     <View style={styles.card}>
@@ -63,6 +63,7 @@ const Card: React.FC<CardProps> = ({
             onPress={handlePunchOut}
             style={styles.button}
             filled={false}
+            disabled={status !== 'Ongoing'}
           />
         </View>
       )}

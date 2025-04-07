@@ -14,11 +14,15 @@ export const validateEmail = (email: string): string => {
 
 export const validatePassword = (password: string): string => {
   const trimmedPassword = password.trim();
+  if (trimmedPassword.length === 0) {
+    return 'Please enter password.';
+  }
   const regex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   return regex.test(trimmedPassword)
     ? ''
-    : 'Password must be at least 8 characters long, and include an upper case letter, a lower case letter, a number, and a special character.';
+    : // : 'Password must be at least 8 characters long, and include an upper case letter, a lower case letter, a number, and a special character.';
+      'Password format incorrect. Please follow the specified requirements.';
 };
 
 export const validateOtp = (otp: string): string => {
@@ -29,6 +33,9 @@ export const validateOtp = (otp: string): string => {
 
 export const validateEmailOrPhone = (input: string): string => {
   const trimmedInput = input.trim();
+  if (trimmedInput.length === 0) {
+    return 'Please enter email or phone number.';
+  }
   const phoneRegex = /^\d{10}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

@@ -36,10 +36,16 @@ export default function Fetch(
 
   const FetchHeader = async (): Promise<AxiosRequestConfig> => {
     const token = isToken
-      ? await AsyncStorage.getItem('userToken').then(data => {
-          const parsed = data ? JSON.parse(data) : null;
-          return parsed?.access_token || '';
-        })
+      ? await AsyncStorage.getItem('userToken')
+          .then(data => {
+            // const parsed = data ? JSON.parse(data) : null;
+            // return parsed?.access_token || '';
+            return data || '';
+          })
+          .catch(err => {
+            console.log('Error fetching token:', err);
+            return '';
+          })
       : '';
 
     const headers: Record<string, string> = {

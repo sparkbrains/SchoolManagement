@@ -5,7 +5,11 @@ export type RootStackParamList = {
   Home: undefined;
   Login: undefined;
   ForgotPassword: undefined;
-  CameraView: undefined;
+  CameraView: {
+    type: string;
+    scheduleId: string;
+    onGoBack: (type: string) => void;
+  };
 };
 
 type ScreenNavigationProp<T extends keyof RootStackParamList> =

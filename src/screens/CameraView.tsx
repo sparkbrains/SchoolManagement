@@ -16,14 +16,18 @@ import {
   useCameraPermission,
 } from 'react-native-vision-camera';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {PhotoFile} from 'react-native-vision-camera';
 import {convertImageFormat, showToast} from '../helpers/common-functions';
 import ImagePreview from '../components/camera/ImagePreview';
 import StyledText from '../components/Text';
 import CustomModal from '../components/CustomModal';
+import Fetch from '../helpers/fetch';
+import moment from 'moment';
 
-const CameraView = () => {
+const CameraView = ({route, navigation}) => {
+  const {type, scheduleId} = route.params;
+
   const {hasPermission, requestPermission} = useCameraPermission();
   const [isPermissionProvided, setIsPermissionProvided] = useState(false);
   const [currentCamera, setCurrentCamera] = useState<CameraPosition>('front');
@@ -34,7 +38,6 @@ const CameraView = () => {
 
   const camera = useRef<Camera>(null);
   const device = useCameraDevice(currentCamera);
-  const navigation = useNavigation();
 
   useEffect(() => {
     const backAction = () => {
@@ -98,26 +101,31 @@ const CameraView = () => {
   const handleConfirm = async () => {
     setIsUploading(true); // Start uploading
     try {
-      // Simulate API call with a 3-second delay
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
       const file = convertImageFormat(capturedPhoto?.path as string);
 
-      // Fetch('api-url', {file: file}, {method: 'post', inFormData: true}).then(res => {
-      //   if (res.status) {
-      //     console.log('Image Uploaded successfully');
-      //   } else {
-      //     console.error('Error in uploading image===', res);
-
-      //   }
-      // });
-
-      showToast('Photo uploaded successfully!');
+      Fetch(
+        'teachers/schedule/mark-attendance/',
+        {
+          schedule: scheduleId,
+          ...(type === 'PUNCH_IN'
+            ? {in_time: moment().format('HH:mm:ss')}
+            : {out_time: moment().format('HH:mm:ss')}),
+          ...(type === 'PUNCH_IN'
+            ? {punch_in_photo: file}
+            : {punch_out_photo: file}),
+        },
+        {method: 'post', inFormData: true},
+      ).then(res => {
+        if (res.status) {
+          showToast(`Punch ${type === 'PUNCH_IN' ? 'in' : 'out'} successful`);
+        }
+      });
     } catch (error) {
       Alert.alert('Error', 'Failed to upload photo.');
     } finally {
       setIsUploading(false);
       setCapturedPhoto(null);
+      route.params.onGoBack({type: type});
       navigation.goBack();
     }
   };
@@ -130,15 +138,6 @@ const CameraView = () => {
     setShowModal(false);
     navigation.goBack();
   };
-
-  // if (!isPermissionProvided) {
-  //   return (
-  //     <View style={styles.blankScreen}>
-  //       <Icon name="camera" style={styles.icon} />
-  //       <StyledText fontSize={fontSize.h4} text="Camera Permission Required" />
-  //     </View>
-  //   );
-  // }
 
   if (!device) {
     return (

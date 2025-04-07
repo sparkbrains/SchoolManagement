@@ -2,13 +2,7 @@ import * as React from 'react';
 import {View, StyleSheet} from 'react-native';
 import StyledText from '../Text';
 import Button from '../button';
-import {
-  borderRadius,
-  boxShadow,
-  colors,
-  fontSize,
-  spacing,
-} from '../../styles/base';
+import {borderRadius, boxShadow, colors, fontSize} from '../../styles/base';
 import Badge from '../Badge';
 import moment from 'moment';
 
@@ -19,6 +13,7 @@ interface CardProps {
   endTime: string;
   handlePunchIn: () => void;
   status: string;
+  handlePunchOut: () => void;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -28,11 +23,14 @@ const Card: React.FC<CardProps> = ({
   endTime,
   status,
   handlePunchIn,
+  handlePunchOut,
 }) => {
   const now = moment();
   const start = moment(startTime, 'HH:mm:ss');
   const end = moment(endTime, 'HH:mm:ss');
-  const isWithinTime = now.isBetween(start, end);
+  const isWithinTime =
+    now.isBetween(start, end) &&
+    (status === 'Upcoming' || status === 'Ongoing') || true;
 
   return (
     <View style={styles.card}>
@@ -58,10 +56,11 @@ const Card: React.FC<CardProps> = ({
             title="Punch In"
             onPress={handlePunchIn}
             style={styles.button}
+            disabled={status === 'Ongoing'}
           />
           <Button
             title="Punch Out"
-            onPress={handlePunchIn}
+            onPress={handlePunchOut}
             style={styles.button}
             filled={false}
           />

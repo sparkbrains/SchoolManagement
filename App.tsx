@@ -8,6 +8,7 @@ import {RootStackParamList} from './src/types/screen-props';
 import CameraView from './src/screens/CameraView';
 import {AuthProvider, useAuth} from './src/components/context/AuthContext';
 import {StatusBar} from 'react-native';
+import {AppProvider} from './src/components/context/AppContext';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -46,7 +47,9 @@ function App(): React.JSX.Element {
 export default function AppWrapper(): React.JSX.Element {
   return (
     <AuthProvider>
-      <App />
+      <AppProvider>
+        <App />
+      </AppProvider>
     </AuthProvider>
   );
 }

@@ -103,7 +103,6 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
   };
 
   const handleSendOtp = () => {
-    console.log('check1===');
     handleStartTimer();
     setErrors({});
     let error = '';
@@ -121,7 +120,6 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
         {email: data?.email},
         {method: 'post'},
       ).then(res => {
-        console.log('send otp response===', res);
         if (res.status) {
           setOtpSent(true);
         } else {
@@ -145,7 +143,6 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
         {email: data?.email, otp: data?.otp},
         {method: 'post'},
       ).then(res => {
-        console.log('verify otp response===', res);
         if (res.status) {
           setOtpVerified(true);
         } else {
@@ -186,7 +183,6 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
         },
         {method: 'post'},
       ).then(res => {
-        console.log('verify otp response===', res);
         if (res.status) {
           showToast('Password changed successfully!');
           navigateToLogin();

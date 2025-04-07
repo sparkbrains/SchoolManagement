@@ -8,13 +8,13 @@ type Props = {
 const Badge: React.FC<Props> = ({status}) => {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Punched In':
+      case 'Upcoming':
         return colors.success;
-      case 'Punched Out':
+      case 'Ongoing':
         return colors.success;
-      case 'Not Started':
+      case 'Completed':
         return colors.accent;
-      case 'Marked Absent':
+      case 'Cancelled':
         return colors.error;
       default:
         return colors.accent;

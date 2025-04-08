@@ -121,7 +121,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
             endTimeMoment.diff(currentTimeMoment),
           );
 
-          console.log('check7===', timeDifference.asMinutes());
+          console.log('elapsed time in minutes===', timeDifference.asMinutes());
 
           if (timeDifference.asMinutes() <= 10) {
             setShowTimerPopup(true);
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.large,
   },
 });
 

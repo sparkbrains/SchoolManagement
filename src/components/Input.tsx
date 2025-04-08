@@ -116,7 +116,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontSize: 16,
     marginBottom: spacing.small,
     color: colors.textPrimary,
   },

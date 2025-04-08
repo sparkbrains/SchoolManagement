@@ -1,6 +1,12 @@
 import * as React from 'react';
 import {Modal, View, StyleSheet} from 'react-native';
-import {colors, fontSize, utilityStyles} from '../styles/base';
+import {
+  borderRadius,
+  colors,
+  fontSize,
+  spacing,
+  utilityStyles,
+} from '../styles/base';
 import StyledText from './Text';
 import Button from './button';
 
@@ -72,18 +78,16 @@ const styles = StyleSheet.create({
   modalContainer: {
     width: '80%',
     backgroundColor: colors.white,
-    borderRadius: 10,
-    padding: 20,
+    borderRadius: borderRadius.medium + 2,
+    padding: spacing.large,
     alignItems: 'center',
   },
   title: {
-    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: spacing.medium + 2,
   },
   text: {
-    fontSize: 16,
-    marginBottom: 20,
+    marginBottom: spacing.large - 4,
     textAlign: 'center',
   },
   buttonContainer: {
@@ -92,7 +96,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   button: {
-    padding: 10,
+    padding: spacing.medium + 2,
     borderRadius: 5,
     alignItems: 'center',
     flex: 1,
@@ -102,11 +106,11 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     backgroundColor: colors.primary,
-    marginLeft: 10,
+    marginLeft: spacing.medium + 2,
   },
   secondaryButton: {
     backgroundColor: '#ccc',
-    marginRight: 10,
+    marginRight: spacing.medium + 2,
   },
   buttonText: {
     color: colors.white,

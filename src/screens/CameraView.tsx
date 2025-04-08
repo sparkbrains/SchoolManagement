@@ -16,7 +16,6 @@ import {
   useCameraPermission,
 } from 'react-native-vision-camera';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {useNavigation, useRoute} from '@react-navigation/native';
 import {PhotoFile} from 'react-native-vision-camera';
 import {convertImageFormat, showToast} from '../helpers/common-functions';
 import ImagePreview from '../components/camera/ImagePreview';
@@ -215,10 +214,6 @@ const CameraView = ({route, navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  icon: {
-    fontSize: 50,
-    marginBottom: 10,
-  },
   previewContainer: {
     flex: 1,
     justifyContent: 'center',

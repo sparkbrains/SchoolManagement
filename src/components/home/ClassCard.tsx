@@ -2,7 +2,7 @@ import * as React from 'react';
 import {View, StyleSheet} from 'react-native';
 import StyledText from '../Text';
 import Button from '../button';
-import {borderRadius, boxShadow, colors, fontSize} from '../../styles/base';
+import {borderRadius, boxShadow, colors, fontSize, spacing} from '../../styles/base';
 import Badge from '../Badge';
 import moment from 'moment';
 
@@ -76,15 +76,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: borderRadius.medium,
     padding: 15,
-    marginBottom: 20,
+    marginBottom: spacing.large - 4,
     ...boxShadow,
   },
   cardTitle: {
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: spacing.medium + 2,
   },
   cardText: {
-    marginBottom: 10,
+    marginBottom: spacing.medium + 2,
   },
   buttonContainer: {
     flexDirection: 'row',

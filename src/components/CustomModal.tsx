@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Modal, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {Modal, View, StyleSheet} from 'react-native';
 import {colors, fontSize, utilityStyles} from '../styles/base';
 import StyledText from './Text';
 import Button from './button';

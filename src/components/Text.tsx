@@ -1,6 +1,5 @@
 import React from 'react';
 import {Text, StyleSheet, TextProps, TextStyle, StyleProp} from 'react-native';
-import {getFontSize} from '../helpers/font';
 
 interface Props extends TextProps {
   text: string;
@@ -11,7 +10,5 @@ interface Props extends TextProps {
 const StyledText: React.FC<Props> = ({text, style, fontSize = 8}) => {
   return <Text style={[style, {fontSize: fontSize}]}>{text}</Text>;
 };
-
-const styles = StyleSheet.create({});
 
 export default StyledText;

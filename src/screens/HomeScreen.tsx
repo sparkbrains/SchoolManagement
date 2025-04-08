@@ -237,7 +237,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       </ScrollView>
       <CustomModal
         visible={showModal}
-        title="Alert!"
+        title="Confirm!"
         text="Are you sure you want to logout?"
         secondaryButtonText="Cancel"
         primaryButtonText="Logout"

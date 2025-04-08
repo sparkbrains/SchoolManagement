@@ -26,3 +26,9 @@ export const calculateElapsedTime = (start: string) => {
   const seconds = duration.seconds().toString().padStart(2, '0');
   return `${hours}:${minutes}:${seconds}`;
 };
+
+export const formatTime = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+};

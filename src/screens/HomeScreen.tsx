@@ -106,16 +106,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   if (timerRunning && startTime) {
-  //     const intervalId = setInterval(() => {
-  //       setElapsedTime(calculateElapsedTime(startTime));
-  //     }, 1000);
-
-  //     return () => clearInterval(intervalId);
-  //   }
-  // }, [timerRunning, startTime]);
-
   useEffect(() => {
     if (timerRunning && startTime && currentClass) {
       const intervalId = setInterval(() => {

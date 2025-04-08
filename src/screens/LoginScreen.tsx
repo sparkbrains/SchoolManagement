@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useState} from 'react';
 import * as React from 'react';
-import {View, StyleSheet, ScrollView, KeyboardAvoidingView} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {LoginScreenProps} from '../types/screen-props';
 import Input from '../components/Input';
 import {
@@ -9,15 +9,12 @@ import {
   colors,
   borderRadius,
   boxShadow,
-  utilityStyles,
   fontSize,
 } from '../styles/base';
-import {getKeyboardBehaviour} from '../helpers/common-functions';
 import StyledText from '../components/Text';
 import Button from '../components/button';
 import TextButton from '../components/text-button';
 import {
-  validateEmail,
   validateEmailOrPhone,
   validatePassword,
 } from '../helpers/validationUtils';
@@ -25,16 +22,15 @@ import Fetch from '../helpers/fetch';
 import {arrayString} from '../helpers/array-string';
 import {TeacherManagementIcon} from '../assets/svg-icons';
 import CustomModal from '../components/CustomModal';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const initialState = {
-  phone_number: '',
-  email: '',
+  username: '',
   password: '',
 };
 
 const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
   const [data, setData] = useState(initialState);
-  const [usePhoneLogin, setUsePhoneLogin] = React.useState(true);
   const [errors, setErrors] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -50,12 +46,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
   const validateField = (type: string, value: string) => {
     let error = '';
     switch (type) {
-      case 'phone_number':
-        // error = validatePhoneNumber(value);
+      case 'username':
         error = validateEmailOrPhone(value);
-        break;
-      case 'email':
-        error = validateEmail(value);
         break;
       case 'password':
         error = validatePassword(value);
@@ -66,11 +58,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
 
   const validateForm = () => {
     let formErrors: any = {};
-    let fieldsToSkip = [usePhoneLogin ? 'email' : 'phone_number'];
 
     Object.entries(data).forEach(([key, value]) => {
-      if (fieldsToSkip.includes(key)) return; // extra check to remove the fields not required for validation
-
       let error = validateField(key, value);
       if (error) {
         formErrors[key] = error;
@@ -88,7 +77,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
       Fetch(
         'accounts/login/',
         {
-          username: usePhoneLogin ? data?.phone_number : data?.email,
+          username: data?.username,
           password: data?.password,
         },
         {method: 'post'},
@@ -111,114 +100,75 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
     navigation.navigate('ForgotPassword');
   };
 
-  const toggleSelection = (allow: boolean): void => {
-    setErrors({});
-    setUsePhoneLogin(allow);
-    setData(initialState);
-  };
-
   const handleIconClick = () => {
     setShowPassword(prevState => !prevState);
   };
 
   return (
     <>
-      <KeyboardAvoidingView
-        behavior={getKeyboardBehaviour()}
-        style={styles.keyboardAvoidingView}>
-        <ScrollView
-          contentContainerStyle={[utilityStyles.container, styles.container]}
-          keyboardShouldPersistTaps="handled">
+      <KeyboardAwareScrollView
+        enableOnAndroid={true}
+        enableAutomaticScroll={true}
+        extraHeight={0}
+        extraScrollHeight={0}
+        keyboardShouldPersistTaps={'handled'}
+        contentContainerStyle={styles.keyboardAvoidingView}
+        style={{backgroundColor: colors.white}}>
+        <View
+          style={styles.innerContainer}
+          pointerEvents={isLoading ? 'none' : 'auto'}>
           <View
-            style={styles.innerContainer}
-            pointerEvents={isLoading ? 'none' : 'auto'}>
-            <View
-              style={{marginHorizontal: 'auto', marginVertical: spacing.large}}>
-              <TeacherManagementIcon size={100} color={colors.primary} />
-            </View>
-
-            <StyledText
-              text="Teacher Login"
-              fontSize={fontSize.header}
-              style={styles.title}
-            />
-
-            {/* <View style={styles.toggleContainer}>
-            <View style={styles.buttonContainer}>
-              <Button
-                onPress={() => toggleSelection(true)}
-                title="Phone"
-                style={styles.toggleButton}
-                filled={usePhoneLogin}
-              />
-              <Button
-                onPress={() => toggleSelection(false)}
-                title="Email"
-                filled={!usePhoneLogin}
-                style={styles.toggleButton}
-              />
-            </View>
-          </View> */}
-
-            {usePhoneLogin ? (
-              <Input
-                label="Email / Phone No."
-                value={data.phone_number}
-                onChangeText={(text: string) =>
-                  handleChange('phone_number', text)
-                }
-                isRequired={true}
-                placeholder={'Enter phone number or email'}
-                // keyboardType={'phone-pad'}
-                customStyles={{marginBottom: spacing.medium}}
-                errorText={errors?.phone_number}
-                // maxLength={10}
-              />
-            ) : (
-              <Input
-                label="Email"
-                value={data.email}
-                onChangeText={(text: string) => handleChange('email', text)}
-                isRequired={true}
-                placeholder={'Enter email'}
-                keyboardType={'email-address'}
-                customStyles={{marginBottom: spacing.medium}}
-                errorText={errors?.email}
-              />
-            )}
-
-            <Input
-              label="Password"
-              value={data.password}
-              onChangeText={(text: string) => handleChange('password', text)}
-              isRequired={true}
-              placeholder={'Enter password'}
-              secureTextEntry={!showPassword}
-              errorText={errors?.password}
-              iconName={showPassword ? 'eye-off-outline' : 'eye-outline'}
-              handleIconClick={handleIconClick}
-              showLabelIcon={true}
-              handleShowInfo={() => setShowInfo(true)}
-            />
-
-            <TextButton
-              text="Forgot your password?"
-              onPress={handleForgotPassword}
-              customStyles={{marginVertical: spacing.medium}}
-            />
-
-            {errors?.non_field_errors && (
-              <StyledText
-                text={errors?.non_field_errors}
-                fontSize={12}
-                style={styles.errorText}
-              />
-            )}
-
-            <Button onPress={handleLogin} title="Login" isLoading={isLoading} />
+            style={{marginHorizontal: 'auto', marginVertical: spacing.large}}>
+            <TeacherManagementIcon size={100} color={colors.primary} />
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+
+          <StyledText
+            text="Teacher Login"
+            fontSize={fontSize.header}
+            style={styles.title}
+          />
+
+          <Input
+            label="Email / Phone No."
+            value={data.username}
+            onChangeText={(text: string) => handleChange('username', text)}
+            isRequired={true}
+            placeholder={'Enter phone number or email'}
+            customStyles={{marginBottom: spacing.medium}}
+            errorText={errors?.username}
+          />
+
+          <Input
+            label="Password"
+            value={data.password}
+            onChangeText={(text: string) => handleChange('password', text)}
+            isRequired={true}
+            placeholder={'Enter password'}
+            secureTextEntry={!showPassword}
+            errorText={errors?.password}
+            iconName={showPassword ? 'eye-off-outline' : 'eye-outline'}
+            handleIconClick={handleIconClick}
+            showLabelIcon={true}
+            handleShowInfo={() => setShowInfo(true)}
+          />
+
+          <TextButton
+            text="Forgot your password?"
+            onPress={handleForgotPassword}
+            customStyles={{marginVertical: spacing.medium}}
+          />
+
+          {errors?.non_field_errors && (
+            <StyledText
+              text={errors?.non_field_errors}
+              fontSize={12}
+              style={styles.errorText}
+            />
+          )}
+
+          <Button onPress={handleLogin} title="Login" isLoading={isLoading} />
+        </View>
+      </KeyboardAwareScrollView>
       <CustomModal
         visible={showInfo}
         title="Instructions"
@@ -233,11 +183,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
 
 const styles = StyleSheet.create({
   keyboardAvoidingView: {
-    flex: 1,
-  },
-  container: {
+    flexGrow: 1,
+    padding: spacing.medium,
     justifyContent: 'center',
   },
+
   innerContainer: {
     backgroundColor: colors.white,
     borderRadius: borderRadius.medium,

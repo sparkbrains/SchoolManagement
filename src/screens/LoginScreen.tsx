@@ -224,7 +224,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
         title="Instructions"
         text="Password must be at least 8 characters long, and include an upper case letter, a lower case letter, a number, and a special character."
         onPrimaryButtonPress={() => setShowInfo(false)}
-        primaryButtonText='Close'
+        primaryButtonText="Close"
         onRequestClose={() => setShowInfo(false)}
       />
     </>

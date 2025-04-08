@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
   labelContainer: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
   },
   inputPaddedRight: {
     paddingRight: 40,

@@ -11,11 +11,10 @@ import {
 } from 'react-native';
 import {HomeScreenProps} from '../types/screen-props';
 import StyledText from '../components/Text';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 
 import {borderRadius, colors, fontSize, spacing} from '../styles/base';
 import Card from '../components/home/ClassCard';
-import Button from '../components/button';
 import Fetch from '../helpers/fetch';
 import moment from 'moment';
 import {calculateElapsedTime} from '../helpers/common-functions';
@@ -73,17 +72,16 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [timerRunning, setTimerRunning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showTimerPopup, setShowTimerPopup] = useState(false);
+  const popupShown = useRef(false);
 
   const fetchData = () => {
     setIsLoading(true);
     Fetch('teachers/schedule/today-classes').then((res: any) => {
-      console.log('res===', res);
-
       setIsLoading(false);
       if (res.status) {
         setData(res?.data);
       } else {
-        // setData(res)
         setData({
           data: [],
           teacher: res?.teacher,
@@ -108,15 +106,43 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     fetchData();
   }, []);
 
+  // useEffect(() => {
+  //   if (timerRunning && startTime) {
+  //     const intervalId = setInterval(() => {
+  //       setElapsedTime(calculateElapsedTime(startTime));
+  //     }, 1000);
+
+  //     return () => clearInterval(intervalId);
+  //   }
+  // }, [timerRunning, startTime]);
+
   useEffect(() => {
-    if (timerRunning && startTime) {
+    if (timerRunning && startTime && currentClass) {
       const intervalId = setInterval(() => {
-        setElapsedTime(calculateElapsedTime(startTime));
+        const currentElapsedTime = calculateElapsedTime(startTime);
+        setElapsedTime(currentElapsedTime);
+
+        if (currentClass?.end_time && !popupShown.current) {
+          const endTimeMoment = moment(currentClass.end_time, 'HH:mm:ss');
+          const currentTimeMoment = moment(startTime, 'HH:mm:ss').add(
+            moment.duration(currentElapsedTime),
+          );
+          const timeDifference = moment.duration(
+            endTimeMoment.diff(currentTimeMoment),
+          );
+
+          console.log('check7===', timeDifference.asMinutes());
+
+          if (timeDifference.asMinutes() <= 10) {
+            setShowTimerPopup(true);
+            popupShown.current = true;
+          }
+        }
       }, 1000);
 
       return () => clearInterval(intervalId);
     }
-  }, [timerRunning, startTime]);
+  }, [timerRunning, startTime, currentClass]);
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('userToken');
@@ -244,6 +270,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         onSecondaryButtonPress={() => setShowModal(false)}
         onPrimaryButtonPress={handleLogout}
         onRequestClose={() => setShowModal(false)}
+      />
+      <CustomModal
+        visible={showTimerPopup}
+        title="10 Minutes Remaining!"
+        text={`Your class ${currentClass?.subject?.name} - ${currentClass?.class_assigned?.name}${currentClass?.class_assigned?.section} is ending soon. Please remember to punch out within the next 10 minutes.`}
+        primaryButtonText="OK"
+        onPrimaryButtonPress={() => setShowTimerPopup(false)}
+        onRequestClose={() => setShowTimerPopup(false)}
       />
     </>
   );

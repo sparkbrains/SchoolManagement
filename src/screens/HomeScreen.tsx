@@ -184,6 +184,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     });
   }, [navigation]);
 
+  console.log('current class===', currentClass);
+
   return isLoading ? (
     <ScreenLoader />
   ) : (
@@ -221,9 +223,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         </View>
         <StyledText
           text={`Welcome, ${
-            data?.teacher?.first_name +
-            ' ' +
-            data?.teacher?.last_name
+            data?.teacher?.first_name + ' ' + data?.teacher?.last_name
           }!`}
           fontSize={fontSize.h1}
           style={styles.header}
@@ -234,8 +234,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
               key={classInfo.id}
               subject={classInfo.subject}
               className={
-                classInfo?.class_info?.name +
-                classInfo?.class_info?.section
+                classInfo?.class_info?.name + classInfo?.class_info?.section
               }
               status={classInfo.status || 'Not Started'}
               startTime={classInfo.start_time}
@@ -267,7 +266,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       <CustomModal
         visible={showTimerPopup}
         title="10 Minutes Remaining!"
-        text={`Your class ${currentClass?.subject?.name} - ${currentClass?.class_assigned?.name}${currentClass?.class_assigned?.section} is ending soon. Please remember to punch out within the next 10 minutes.`}
+        text={`Your class ${currentClass?.subject} - ${currentClass?.class_info?.name}${currentClass?.class_info?.section} is ending soon. Please remember to punch out within the next 10 minutes.`}
         primaryButtonText="OK"
         onPrimaryButtonPress={() => setShowTimerPopup(false)}
         onRequestClose={() => setShowTimerPopup(false)}

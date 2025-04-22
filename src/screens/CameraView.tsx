@@ -101,20 +101,28 @@ const CameraView = ({route, navigation}) => {
     setIsUploading(true); // Start uploading
     try {
       const file = convertImageFormat(capturedPhoto?.path as string);
+      console.log('check===', {
+        ...(type === 'PUNCH_IN'
+          ? {in_time: moment().format('HH:mm')}
+          : {out_time: moment().format('HH:mm')}),
+        ...(type === 'PUNCH_IN'
+          ? {punch_in_photo: file}
+          : {punch_out_photo: file}),
+      });
 
       Fetch(
-        'teachers/schedule/mark-attendance/',
+        `teachers/${scheduleId}/mark-attendance/`,
         {
-          schedule: scheduleId,
           ...(type === 'PUNCH_IN'
-            ? {in_time: moment().format('HH:mm:ss')}
-            : {out_time: moment().format('HH:mm:ss')}),
+            ? {in_time: moment().format('HH:mm')}
+            : {out_time: moment().format('HH:mm')}),
           ...(type === 'PUNCH_IN'
             ? {punch_in_photo: file}
             : {punch_out_photo: file}),
         },
         {method: 'post', inFormData: true},
       ).then(res => {
+        console.log('Punch In Request===', res);
         if (res.status) {
           showToast(`Punch ${type === 'PUNCH_IN' ? 'in' : 'out'} successful`);
         }

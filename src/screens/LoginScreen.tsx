@@ -75,13 +75,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
     } else {
       setIsLoading(true);
       Fetch(
-        'accounts/login/',
+        'login/',
         {
           username: data?.username,
           password: data?.password,
         },
         {method: 'post'},
       ).then(res => {
+        console.log('login response', res);
         if (res.status) {
           AsyncStorage.setItem('userToken', res?.data?.access);
           navigation.replace('Home');

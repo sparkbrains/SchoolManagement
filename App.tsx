@@ -22,7 +22,7 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
-      <Stack.Navigator initialRouteName={isLoggedIn ? 'Home' : 'Home'}>
+      <Stack.Navigator initialRouteName={isLoggedIn ? 'Home' : 'Login'}>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen
           name="Login"

@@ -30,7 +30,7 @@ const Card: React.FC<CardProps> = ({
   const end = moment(endTime, 'HH:mm:ss');
   const isWithinTime =
     now.isBetween(start, end) &&
-    (status === 'Upcoming' || status === 'Ongoing') ;
+    (status === 'Upcoming' || status === 'Ongoing');
 
   return (
     <View style={styles.card}>

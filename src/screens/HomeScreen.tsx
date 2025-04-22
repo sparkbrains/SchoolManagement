@@ -77,7 +77,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const fetchData = () => {
     setIsLoading(true);
-    Fetch('teachers/schedule/today-classes').then((res: any) => {
+    Fetch('teachers/today-classes').then((res: any) => {
+      console.log('classes===', res);
       setIsLoading(false);
       if (res.status) {
         setData(res?.data);
@@ -120,8 +121,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           const timeDifference = moment.duration(
             endTimeMoment.diff(currentTimeMoment),
           );
-
-          console.log('elapsed time in minutes===', timeDifference.asMinutes());
 
           if (timeDifference.asMinutes() <= 10) {
             setShowTimerPopup(true);
@@ -197,7 +196,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         {timerRunning && (
           <View style={styles.ongoingClassContainer}>
             <StyledText
-              text={`Ongoing: ${currentClass?.subject?.name} - ${currentClass?.class_assigned?.name}${currentClass?.class_assigned?.section}`}
+              text={`Ongoing: ${currentClass?.subject} - ${currentClass?.class_info?.name}${currentClass?.class_info?.section}`}
               fontSize={fontSize.h3}
               style={styles.ongoingClassText}
             />
@@ -221,7 +220,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           />
         </View>
         <StyledText
-          text={`Welcome, ${data?.teacher?.name}!`}
+          text={`Welcome, ${
+            data?.teacher?.first_name +
+            ' ' +
+            data?.teacher?.last_name
+          }!`}
           fontSize={fontSize.h1}
           style={styles.header}
         />
@@ -229,10 +232,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           data?.data.map(classInfo => (
             <Card
               key={classInfo.id}
-              subject={classInfo.subject?.name}
+              subject={classInfo.subject}
               className={
-                classInfo?.class_assigned?.name +
-                classInfo?.class_assigned?.section
+                classInfo?.class_info?.name +
+                classInfo?.class_info?.section
               }
               status={classInfo.status || 'Not Started'}
               startTime={classInfo.start_time}

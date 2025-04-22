@@ -98,7 +98,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
     } else {
       setIsLoading(true);
       Fetch(
-        'accounts/password-reset/request/',
+        'password-reset/request/',
         {email: data?.email},
         {method: 'post'},
       ).then(res => {
@@ -121,7 +121,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
     } else {
       setIsLoading(true);
       Fetch(
-        'accounts/password-reset/verify/',
+        'password-reset/verify/',
         {email: data?.email, otp: data?.otp},
         {method: 'post'},
       ).then(res => {
@@ -157,7 +157,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
     } else {
       setIsLoading(true);
       Fetch(
-        'accounts/password-reset/reset/',
+        'password-reset/reset/',
         {
           email: data?.email,
           new_password: data?.password,

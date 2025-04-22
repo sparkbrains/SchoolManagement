@@ -90,6 +90,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     });
   };
 
+  console.log('data====', data);
+
   const handleStartTimer = () => {
     setStartTime(moment().format('HH:mm:ss'));
     setTimerRunning(true);

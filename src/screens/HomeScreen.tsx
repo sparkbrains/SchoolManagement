@@ -78,7 +78,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const fetchData = () => {
     setIsLoading(true);
     Fetch('teachers/today-classes').then((res: any) => {
-      console.log('classes===', res);
       setIsLoading(false);
       if (res.status) {
         setData(res?.data);
@@ -183,8 +182,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       ),
     });
   }, [navigation]);
-
-  console.log('current class===', currentClass);
 
   return isLoading ? (
     <ScreenLoader />

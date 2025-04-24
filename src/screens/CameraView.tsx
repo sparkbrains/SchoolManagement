@@ -23,8 +23,9 @@ import StyledText from '../components/Text';
 import CustomModal from '../components/CustomModal';
 import Fetch from '../helpers/fetch';
 import moment from 'moment';
+import {CameraScreenProps} from '../types/screen-props';
 
-const CameraView = ({route, navigation}) => {
+const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
   const {type, scheduleId} = route.params;
 
   const {hasPermission, requestPermission} = useCameraPermission();

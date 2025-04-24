@@ -38,8 +38,6 @@ export default function Fetch(
     const token = isToken
       ? await AsyncStorage.getItem('userToken')
           .then(data => {
-            // const parsed = data ? JSON.parse(data) : null;
-            // return parsed?.access_token || '';
             return data || '';
           })
           .catch(err => {

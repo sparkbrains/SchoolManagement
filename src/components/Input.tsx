@@ -53,7 +53,7 @@ const Input: React.FC<InputProps> = ({
   handleShowInfo,
 }) => {
   return (
-    <View style={[styles.container, customStyles]}>
+    <View style={[customStyles]}>
       <View style={showLabelIcon && styles.labelContainer}>
         <StyledText text={label} fontSize={16} style={styles.label} />
         {showLabelIcon && (
@@ -101,9 +101,6 @@ const Input: React.FC<InputProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    // marginBottom: spacing.medium,
-  },
   labelContainer: {
     flexDirection: 'row',
     gap: 8,

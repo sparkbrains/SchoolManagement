@@ -23,7 +23,7 @@ import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import CustomModal from '../components/CustomModal';
 
 type ClassType = {
-  class_assigned: {
+  class_info: {
     id: string;
     name: string;
     section: string;
@@ -32,9 +32,7 @@ type ClassType = {
   end_time: string;
   id: string;
   start_time: string;
-  subject: {
-    name: string;
-  };
+  subject: string;
   status: string;
 };
 
@@ -42,7 +40,8 @@ type ClassList = {
   data: Array<ClassType>;
   teacher: {
     id: string;
-    name: string;
+    first_name: string;
+    last_name: string;
     school: {
       email: string;
       logo: string;
@@ -55,7 +54,8 @@ const initialState = {
   data: [],
   teacher: {
     id: '',
-    name: '',
+    first_name: '',
+    last_name: '',
     school: {
       email: '',
       logo: '',
@@ -73,6 +73,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showTimerPopup, setShowTimerPopup] = useState(false);
+  
   const popupShown = useRef(false);
 
   const fetchData = () => {
@@ -89,8 +90,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       }
     });
   };
-
-  console.log('data====', data);
 
   const handleStartTimer = () => {
     setStartTime(moment().format('HH:mm:ss'));

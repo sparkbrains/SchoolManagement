@@ -14,6 +14,7 @@ const colors = {
   border: '#B0BEC5',
   white: '#FFFFFF',
   info: '#1976D2',
+  modalBackground: 'rgba(0, 0, 0, 0.5)',
 };
 
 const spacing = {
@@ -84,7 +85,7 @@ const utilityStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: colors.modalBackground,
   },
 });
 

@@ -77,7 +77,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
       Fetch(
         'login/',
         {
-          username: data?.username,
+          phone_number_or_email: data?.username,
+          phone_number_prefix: "+91",
           password: data?.password,
         },
         {method: 'post'},

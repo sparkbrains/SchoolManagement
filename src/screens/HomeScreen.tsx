@@ -32,7 +32,10 @@ type ClassType = {
   end_time: string;
   id: string;
   start_time: string;
-  subject: string;
+  subject: {
+    id: string;
+    name: string;
+  };
   status: string;
 };
 
@@ -73,7 +76,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showTimerPopup, setShowTimerPopup] = useState(false);
-  
+
   const popupShown = useRef(false);
 
   const fetchData = () => {
@@ -81,6 +84,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     Fetch('teachers/today-classes').then((res: any) => {
       setIsLoading(false);
       if (res.status) {
+        console.log('response===', res);
         setData(res?.data);
       } else {
         setData({
@@ -230,7 +234,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           data?.data.map(classInfo => (
             <Card
               key={classInfo.id}
-              subject={classInfo.subject}
+              subject={classInfo?.subject?.name}
               className={
                 classInfo?.class_info?.name + classInfo?.class_info?.section
               }

@@ -78,7 +78,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
         'login/',
         {
           phone_number_or_email: data?.username,
-          phone_number_prefix: "+91",
+          phone_number_prefix: '+91',
           password: data?.password,
         },
         {method: 'post'},
@@ -89,6 +89,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
         } else {
           let errors = arrayString(res);
           setErrors(errors);
+          console.log('err===', errors);
         }
         setIsLoading(false);
       });
@@ -158,6 +159,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
             onPress={handleForgotPassword}
             customStyles={{marginVertical: spacing.medium}}
           />
+
+          {errors?.message && (
+            <StyledText
+              text={errors?.message}
+              fontSize={12}
+              style={styles.errorText}
+            />
+          )}
 
           {errors?.non_field_errors && (
             <StyledText

@@ -27,7 +27,7 @@ const Card: React.FC<CardProps> = ({
 }) => {
   const now = moment();
   const start = moment(startTime, 'HH:mm:ss');
-  const end = moment(endTime, 'HH:mm:ss');
+  const end = moment(endTime, 'HH:mm:ss').add(5, 'minutes');
   const isWithinTime =
     now.isBetween(start, end) &&
     (status === 'Upcoming' || status === 'Ongoing');

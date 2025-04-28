@@ -21,6 +21,7 @@ import {calculateElapsedTime} from '../helpers/common-functions';
 import ScreenLoader from '../components/ScreenLoader';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import CustomModal from '../components/CustomModal';
+import {CommonActions} from '@react-navigation/native';
 
 type ClassType = {
   class_info: {
@@ -82,11 +83,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const fetchData = () => {
     setIsLoading(true);
     Fetch('teachers/today-classes').then((res: any) => {
+      console.log('res===', res);
       setIsLoading(false);
       if (res.status) {
-        console.log('response===', res);
         setData(res?.data);
       } else {
+        if (res?.code === 'user_inactive') {
+          handleLogout();
+        }
         setData({
           data: [],
           teacher: res?.teacher,
@@ -127,6 +131,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           );
 
           if (timeDifference.asMinutes() <= 10) {
+            // TODO
             setShowTimerPopup(true);
             popupShown.current = true;
           }
@@ -139,7 +144,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('userToken');
-    navigation.replace('Login');
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'Login'}],
+      }),
+    );
   };
 
   const changeState = (type: string, classId: string) => {
@@ -200,7 +210,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         {timerRunning && (
           <View style={styles.ongoingClassContainer}>
             <StyledText
-              text={`Ongoing: ${currentClass?.subject} - ${currentClass?.class_info?.name}${currentClass?.class_info?.section}`}
+              text={`Ongoing: ${currentClass?.subject?.name} - ${currentClass?.class_info?.name}${currentClass?.class_info?.section}`}
               fontSize={fontSize.h3}
               style={styles.ongoingClassText}
             />
@@ -230,7 +240,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           fontSize={fontSize.h1}
           style={styles.header}
         />
-        {data?.data.length > 0 ? (
+        {data?.data.length > 0 ? ( // TODO
           data?.data.map(classInfo => (
             <Card
               key={classInfo.id}

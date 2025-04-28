@@ -24,6 +24,7 @@ import {arrayString} from '../helpers/array-string';
 import TextButton from '../components/text-button';
 import {TeacherManagementIcon} from '../assets/svg-icons';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import CustomModal from '../components/CustomModal';
 
 const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
   navigation,
@@ -44,6 +45,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
     newPassword: false,
     confirmPassword: false,
   });
+  const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -310,6 +312,8 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
                 showPassword.newPassword ? 'eye-off-outline' : 'eye-outline'
               }
               handleIconClick={() => togglePasswordVisibility('newPassword')}
+              showLabelIcon={true}
+              handleShowInfo={() => setShowInfo(true)}
             />
             <Input
               label="Confirm Password"
@@ -328,6 +332,8 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
               handleIconClick={() =>
                 togglePasswordVisibility('confirmPassword')
               }
+              showLabelIcon={true}
+              handleShowInfo={() => setShowInfo(true)}
             />
 
             {errors?.non_field_errors && (
@@ -351,6 +357,14 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
           customStyles={styles.rememberPassword}
         />
       </View>
+      <CustomModal
+        visible={showInfo}
+        title="Instructions"
+        text="Password must be at least 8 characters long, and include an upper case letter, a lower case letter, a number, and a special character."
+        onPrimaryButtonPress={() => setShowInfo(false)}
+        primaryButtonText="Close"
+        onRequestClose={() => setShowInfo(false)}
+      />
     </KeyboardAwareScrollView>
   );
 };

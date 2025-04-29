@@ -1,10 +1,19 @@
 import * as React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {useState} from 'react';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import StyledText from '../Text';
 import Button from '../button';
-import {borderRadius, boxShadow, colors, fontSize, spacing} from '../../styles/base';
+import {
+  borderRadius,
+  boxShadow,
+  colors,
+  fontSize,
+  spacing,
+} from '../../styles/base';
 import Badge from '../Badge';
 import moment from 'moment';
+import CardDetailsModal from './CardDetailsModal';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface CardProps {
   subject: string;
@@ -13,7 +22,10 @@ interface CardProps {
   endTime: string;
   handlePunchIn: () => void;
   status: string;
+  logs: any;
   handlePunchOut: () => void;
+  isEarly?: boolean;
+  isLate?: boolean;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -24,6 +36,9 @@ const Card: React.FC<CardProps> = ({
   status,
   handlePunchIn,
   handlePunchOut,
+  logs,
+  isEarly,
+  isLate,
 }) => {
   const now = moment();
   const start = moment(startTime, 'HH:mm:ss');
@@ -31,6 +46,8 @@ const Card: React.FC<CardProps> = ({
   const isWithinTime =
     now.isBetween(start, end) &&
     (status === 'Upcoming' || status === 'Ongoing');
+
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={styles.card}>
@@ -40,7 +57,26 @@ const Card: React.FC<CardProps> = ({
           fontSize={fontSize.h3}
           style={styles.cardTitle}
         />
-        <Badge status={status} />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 6,
+          }}>
+          <Badge
+            status={status}
+            isValid={
+              logs?.last_punch_out_time &&
+              logs?.last_punch_in_time &&
+              !isEarly &&
+              !isLate
+            }
+          />
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <Icon name={'eye-outline'} size={20} color={colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
       </View>
       <StyledText
         text={`${moment(startTime, 'HH:mm:ss').format('LT')} - ${moment(
@@ -50,6 +86,7 @@ const Card: React.FC<CardProps> = ({
         fontSize={fontSize.h3}
         style={isWithinTime && styles.cardText}
       />
+
       {isWithinTime && (
         <View style={styles.buttonContainer}>
           <Button
@@ -67,11 +104,21 @@ const Card: React.FC<CardProps> = ({
           />
         </View>
       )}
+      <CardDetailsModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        logs={logs}
+        startTime={startTime}
+        endTime={endTime}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  infoText: {
+    marginBottom: spacing.small,
+  },
   card: {
     backgroundColor: colors.white,
     borderRadius: borderRadius.medium,

@@ -24,6 +24,7 @@ import CustomModal from '../components/CustomModal';
 import Fetch from '../helpers/fetch';
 import moment from 'moment';
 import {CameraScreenProps} from '../types/screen-props';
+import ReasonModal from '../components/home/ReasonModal';
 
 const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
   const {type, scheduleId} = route.params;
@@ -35,6 +36,9 @@ const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
   const [capturedPhoto, setCapturedPhoto] = useState<PhotoFile | null>(null);
   const [isUploading, setIsUploading] = useState(false); // New state for upload status
   const [showModal, setShowModal] = useState(false);
+  const [showReasonModal, setShowReasonModal] = useState(false);
+  const [reason, setReason] = useState('');
+  const [punchStatus, setPunchStatus] = useState('');
 
   const camera = useRef<Camera>(null);
   const device = useCameraDevice(currentCamera);
@@ -99,7 +103,7 @@ const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
   };
 
   const handleConfirm = async () => {
-    setIsUploading(true); // Start uploading
+    setIsUploading(true);
     try {
       const file = convertImageFormat(capturedPhoto?.path as string);
 
@@ -112,20 +116,40 @@ const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
           ...(type === 'PUNCH_IN'
             ? {punch_in_photo: file}
             : {punch_out_photo: file}),
+          ...(showReasonModal
+            ? {
+                [punchStatus === 'is_late' ? 'late_reason' : 'early_reason']:
+                  reason,
+              }
+            : {}),
         },
         {method: 'post', inFormData: true},
-      ).then(res => {
+      ).then((res: any) => {
+        console.log('attebdabce===', res);
+        setIsUploading(false);
         if (res.status) {
           showToast(`Punch ${type === 'PUNCH_IN' ? 'in' : 'out'} successful`);
+          setCapturedPhoto(null);
+          route.params.onGoBack(type);
+          navigation.goBack();
+        } else {
+          if (res?.is_late || res?.is_early) {
+            setShowReasonModal(true);
+          }
+          if (res?.is_late) {
+            setPunchStatus('is_late');
+          } else {
+            setPunchStatus('is_early');
+          }
         }
       });
     } catch (error) {
       Alert.alert('Error', 'Failed to upload photo.');
     } finally {
-      setIsUploading(false);
-      setCapturedPhoto(null);
-      route.params.onGoBack(type);
-      navigation.goBack();
+      // setIsUploading(false);
+      // setCapturedPhoto(null);
+      // route.params.onGoBack(type);
+      // navigation.goBack();
     }
   };
 
@@ -208,6 +232,15 @@ const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
         onPrimaryButtonPress={handleShowSettings}
         onRequestClose={handleCancel}
         onSecondaryButtonPress={handleCancel}
+      />
+      <ReasonModal
+        visible={showReasonModal}
+        reason={reason}
+        changeReason={(text: string) => setReason(text)}
+        title="Provide reason"
+        onSubmit={handleConfirm}
+        onRequestClose={() => {}}
+        isLoading={isUploading}
       />
     </>
   );

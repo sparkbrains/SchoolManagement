@@ -83,9 +83,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const fetchData = () => {
     setIsLoading(true);
     Fetch('teachers/today-classes').then((res: any) => {
-      console.log('res===', res);
+      console.log('classes===', res);
       setIsLoading(false);
       if (res.status) {
+        if (!res?.data?.data?.length) {
+          setTimerRunning(false);
+        }
         setData(res?.data);
       } else {
         if (res?.code === 'user_inactive') {
@@ -99,8 +102,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     });
   };
 
-  const handleStartTimer = () => {
-    setStartTime(moment().format('HH:mm:ss'));
+  const handleStartTimer = (initialTime?: string) => {
+    setStartTime(initialTime || moment().format('HH:mm:ss'));
     setTimerRunning(true);
   };
 
@@ -114,6 +117,26 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const checkForOngoingClass = () => {
+    const currentTime = moment().format('HH:mm:ss');
+    const ongoingClass = data?.data.find(item => item?.status === 'Ongoing');
+
+    if (
+      ongoingClass &&
+      currentTime >= ongoingClass.start_time &&
+      currentTime <= ongoingClass.end_time
+    ) {
+      setCurrentClass(ongoingClass);
+      handleStartTimer(ongoingClass?.logs?.last_punch_in_time);
+    }
+  };
+
+  useEffect(() => {
+    if (data?.data?.length) {
+      checkForOngoingClass();
+    }
+  }, [data]);
 
   useEffect(() => {
     if (timerRunning && startTime && currentClass) {
@@ -131,7 +154,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           );
 
           if (timeDifference.asMinutes() <= 10) {
-            // TODO
             setShowTimerPopup(true);
             popupShown.current = true;
           }
@@ -152,23 +174,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     );
   };
 
-  const changeState = (type: string, classId: string) => {
-    setData(prevState => {
-      return {
-        ...prevState,
-        data: prevState.data.map(item => {
-          if (item.id === classId) {
-            return {
-              ...item,
-              status: type === 'PUNCH_IN' ? 'Ongoing' : 'Completed',
-            };
-          }
-          return item;
-        }),
-      };
-    });
-  };
-
   const handleNavigate = async (type: string, classId: string) => {
     setCurrentClass(data?.data.find(item => item.id === classId) || null);
     navigation.navigate('CameraView', {
@@ -176,12 +181,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       scheduleId: classId,
       onGoBack: (type: string) => {
         if (type === 'PUNCH_IN') {
-          handleStartTimer();
+          // handleStartTimer();
         } else {
           handleStopTimer();
         }
 
-        changeState(type, classId);
+        fetchData();
       },
     });
   };
@@ -197,6 +202,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       ),
     });
   }, [navigation]);
+
+  console.log('class info===', data?.data);
 
   return isLoading ? (
     <ScreenLoader />
@@ -232,6 +239,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
             resizeMode="contain"
             style={styles.logo}
           />
+
+          <StyledText
+            text={data?.teacher?.school?.name || ''}
+            fontSize={fontSize.h3}
+            style={styles.schoolName}
+          />
         </View>
         <StyledText
           text={`Welcome, ${
@@ -240,7 +253,18 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           fontSize={fontSize.h1}
           style={styles.header}
         />
-        {data?.data.length > 0 ? ( // TODO
+
+        <StyledText
+          text={`Schedule for ${
+            moment(data?.slot_type, 'YYYY-MM-DD', true).isValid()
+              ? moment(data?.slot_type).format('MMMM Do, YYYY')
+              : data?.slot_type
+          }`}
+          fontSize={fontSize.h3}
+          style={styles.scheduleText}
+        />
+
+        {data?.data.length > 0 ? (
           data?.data.map(classInfo => (
             <Card
               key={classInfo.id}
@@ -253,6 +277,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
               endTime={classInfo.end_time}
               handlePunchIn={() => handleNavigate('PUNCH_IN', classInfo?.id)}
               handlePunchOut={() => handleNavigate('PUNCH_OUT', classInfo?.id)}
+              logs={classInfo?.logs}
+              isEarly={classInfo?.is_early}
+              isLate={classInfo?.is_late}
             />
           ))
         ) : (
@@ -278,7 +305,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       <CustomModal
         visible={showTimerPopup}
         title="10 Minutes Remaining!"
-        text={`Your class ${currentClass?.subject} - ${currentClass?.class_info?.name}${currentClass?.class_info?.section} is ending soon. Please remember to punch out within the next 10 minutes.`}
+        text={`Your class ${currentClass?.subject?.name} - ${currentClass?.class_info?.name}${currentClass?.class_info?.section} is ending soon. Please remember to punch out within the next 10 minutes.`}
         primaryButtonText="OK"
         onPrimaryButtonPress={() => setShowTimerPopup(false)}
         onRequestClose={() => setShowTimerPopup(false)}
@@ -332,6 +359,17 @@ const styles = StyleSheet.create({
   emptyContainer: {
     flex: 1,
     paddingHorizontal: spacing.large,
+  },
+  schoolName: {
+    marginTop: spacing.small,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  scheduleText: {
+    textAlign: 'center',
+    color: colors.secondary,
+    marginBottom: spacing.large,
   },
 });
 

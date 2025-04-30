@@ -119,14 +119,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   }, []);
 
   const checkForOngoingClass = () => {
-    const currentTime = moment().format('HH:mm:ss');
-    const ongoingClass = data?.data.find(item => item?.status === 'Ongoing');
+    const ongoingClass = data?.data.find(
+      item =>
+        !!item?.logs?.last_punch_in_time && !item?.logs?.last_punch_out_time,
+    );
 
-    if (
-      ongoingClass &&
-      currentTime >= ongoingClass.start_time &&
-      currentTime <= ongoingClass.end_time
-    ) {
+    if (ongoingClass) {
       setCurrentClass(ongoingClass);
       handleStartTimer(ongoingClass?.logs?.last_punch_in_time);
     }
@@ -174,11 +172,18 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     );
   };
 
-  const handleNavigate = async (type: string, classId: string) => {
+  const handleNavigate = async (
+    type: string,
+    classId: string,
+    startTime,
+    endTime,
+  ) => {
     setCurrentClass(data?.data.find(item => item.id === classId) || null);
     navigation.navigate('CameraView', {
       type: type,
       scheduleId: classId,
+      startTime: startTime,
+      endTime: endTime,
       onGoBack: (type: string) => {
         if (type === 'PUNCH_IN') {
           // handleStartTimer();
@@ -189,6 +194,28 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         fetchData();
       },
     });
+  };
+
+  const getRemainingTimeTitle = (
+    endTime: string,
+    elapsedTime: string,
+  ): string => {
+    if (!endTime || !elapsedTime) return 'Time information unavailable';
+
+    const now = moment();
+    const [endHour, endMinute] = endTime.split(':').map(Number);
+    const end = moment().set({hour: endHour, minute: endMinute, second: 0});
+
+    const elapsed = moment.duration(elapsedTime);
+    const effectiveTime = now.clone().subtract(elapsed);
+
+    const remainingMinutes = end.diff(effectiveTime, 'minutes');
+
+    if (remainingMinutes < 0) {
+      return 'Time has already passed!';
+    }
+
+    return `${remainingMinutes} Minutes Remaining!`;
   };
 
   React.useLayoutEffect(() => {
@@ -202,8 +229,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       ),
     });
   }, [navigation]);
-
-  console.log('class info===', data?.data);
 
   return isLoading ? (
     <ScreenLoader />
@@ -258,12 +283,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           text={`Schedule for ${
             moment(data?.slot_type, 'YYYY-MM-DD', true).isValid()
               ? moment(data?.slot_type).format('MMMM Do, YYYY')
-              : data?.slot_type
+              : data?.slot_type +
+                ` (${moment(moment.now()).format('DD MMM, YYYY')})`
           }`}
           fontSize={fontSize.h3}
           style={styles.scheduleText}
         />
-
+        {/* check if classlast_punch_in_time */}
         {data?.data.length > 0 ? (
           data?.data.map(classInfo => (
             <Card
@@ -272,14 +298,41 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
               className={
                 classInfo?.class_info?.name + classInfo?.class_info?.section
               }
-              status={classInfo.status || 'Not Started'}
+              status={
+                !classInfo?.logs?.last_punch_in_time &&
+                !classInfo?.logs?.last_punch_out_time &&
+                moment().isAfter(moment(classInfo.end_time, 'HH:mm'))
+                  ? 'Expired'
+                  : classInfo.status
+              }
               startTime={classInfo.start_time}
               endTime={classInfo.end_time}
-              handlePunchIn={() => handleNavigate('PUNCH_IN', classInfo?.id)}
-              handlePunchOut={() => handleNavigate('PUNCH_OUT', classInfo?.id)}
+              handlePunchIn={() =>
+                handleNavigate(
+                  'PUNCH_IN',
+                  classInfo?.id,
+                  classInfo.start_time,
+                  classInfo.end_time,
+                )
+              }
+              handlePunchOut={() =>
+                handleNavigate(
+                  'PUNCH_OUT',
+                  classInfo?.id,
+                  classInfo.start_time,
+                  classInfo.end_time,
+                )
+              }
               logs={classInfo?.logs}
               isEarly={classInfo?.is_early}
               isLate={classInfo?.is_late}
+              scheduleDate={`${
+                moment(data?.slot_type, 'YYYY-MM-DD', true).isValid()
+                  ? moment(data?.slot_type).format('MMMM Do, YYYY')
+                  : data?.slot_type +
+                    ` (${moment(moment.now()).format('DD MMM, YYYY')})`
+              }`}
+              timerRunning={timerRunning}
             />
           ))
         ) : (
@@ -304,8 +357,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       />
       <CustomModal
         visible={showTimerPopup}
-        title="10 Minutes Remaining!"
-        text={`Your class ${currentClass?.subject?.name} - ${currentClass?.class_info?.name}${currentClass?.class_info?.section} is ending soon. Please remember to punch out within the next 10 minutes.`}
+        title="Alert!"
+        // title={getRemainingTimeTitle(currentClass?.end_time, elapsedTime)}
+        text={`Your class ${currentClass?.subject?.name} - ${currentClass?.class_info?.name}${currentClass?.class_info?.section} is ending soon. Please remember to punch out.`}
         primaryButtonText="OK"
         onPrimaryButtonPress={() => setShowTimerPopup(false)}
         onRequestClose={() => setShowTimerPopup(false)}

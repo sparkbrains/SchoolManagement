@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useEffect, useLayoutEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -27,7 +27,38 @@ import {CameraScreenProps} from '../types/screen-props';
 import ReasonModal from '../components/home/ReasonModal';
 
 const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
-  const {type, scheduleId} = route.params;
+  const {type, scheduleId, startTime, endTime} = route.params;
+  const [isLateArrival, setIsLateArrival] = useState(false);
+  const [isEarlyLeave, setIsEarlyLeave] = useState(false);
+  const [isLateLeave, setIsLateLeave] = useState(false);
+
+  const calculateTimeScenarios = () => {
+    const currentTime = moment();
+    const start = moment(startTime, 'HH:mm');
+    const end = moment(endTime, 'HH:mm');
+
+    if (type === 'PUNCH_IN') {
+      const lateByMinutes = currentTime.diff(start, 'minutes');
+      console.log('latebyminutes===', lateByMinutes, currentTime);
+      setIsLateArrival(lateByMinutes > 5);
+    }
+
+    if (type === 'PUNCH_OUT') {
+      const minutesBeforeEnd = end.diff(currentTime, 'minutes');
+      const minutesAfterEnd = currentTime.diff(end, 'minutes');
+
+      if (minutesBeforeEnd > 5) {
+        setIsEarlyLeave(true);
+        setIsLateLeave(false);
+      } else if (minutesAfterEnd > 5) {
+        setIsLateLeave(true);
+        setIsEarlyLeave(false);
+      } else {
+        setIsEarlyLeave(false);
+        setIsLateLeave(false);
+      }
+    }
+  };
 
   const {hasPermission, requestPermission} = useCameraPermission();
   const [isPermissionProvided, setIsPermissionProvided] = useState(false);
@@ -125,7 +156,6 @@ const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
         },
         {method: 'post', inFormData: true},
       ).then((res: any) => {
-        console.log('attebdabce===', res);
         setIsUploading(false);
         if (res.status) {
           showToast(`Punch ${type === 'PUNCH_IN' ? 'in' : 'out'} successful`);
@@ -134,6 +164,7 @@ const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
           navigation.goBack();
         } else {
           if (res?.is_late || res?.is_early) {
+            calculateTimeScenarios();
             setShowReasonModal(true);
           }
           if (res?.is_late) {
@@ -169,6 +200,18 @@ const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
       </View>
     );
   }
+
+  console.log('check====', isLateArrival, isEarlyLeave, isLateLeave);
+
+  const getTitle = () => {
+    if (isLateArrival) {
+      return 'Reason for arriving late';
+    } else if (isEarlyLeave) {
+      return 'Reason for leaving early';
+    } else {
+      return 'Reason for staying late';
+    }
+  };
 
   return (
     <>
@@ -237,7 +280,7 @@ const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
         visible={showReasonModal}
         reason={reason}
         changeReason={(text: string) => setReason(text)}
-        title="Provide reason"
+        title={getTitle()}
         onSubmit={handleConfirm}
         onRequestClose={() => {}}
         isLoading={isUploading}

@@ -26,6 +26,8 @@ interface CardProps {
   handlePunchOut: () => void;
   isEarly?: boolean;
   isLate?: boolean;
+  scheduleDate?: boolean;
+  timerRunning?: boolean;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -39,13 +41,16 @@ const Card: React.FC<CardProps> = ({
   logs,
   isEarly,
   isLate,
+  scheduleDate,
+  timerRunning,
 }) => {
   const now = moment();
   const start = moment(startTime, 'HH:mm:ss');
-  const end = moment(endTime, 'HH:mm:ss').add(5, 'minutes');
-  const isWithinTime =
-    now.isBetween(start, end) &&
-    (status === 'Upcoming' || status === 'Ongoing');
+  const end = moment(endTime, 'HH:mm:ss');
+  const isWithinTime = now.isAfter(start);
+  const allowPunchIn = now.isBetween(start, end);
+
+  console.log('check====>>', isEarly, isLate, startTime, endTime);
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -84,32 +89,39 @@ const Card: React.FC<CardProps> = ({
           'HH:mm:ss',
         ).format('LT')}`}
         fontSize={fontSize.h3}
-        style={isWithinTime && styles.cardText}
+        style={styles.cardText}
       />
 
-      {isWithinTime && (
-        <View style={styles.buttonContainer}>
-          <Button
-            title="Punch In"
-            onPress={handlePunchIn}
-            style={styles.button}
-            disabled={status === 'Ongoing'}
-          />
-          <Button
-            title="Punch Out"
-            onPress={handlePunchOut}
-            style={styles.button}
-            filled={false}
-            disabled={status !== 'Ongoing'}
-          />
-        </View>
-      )}
+      {isWithinTime &&
+        (!logs?.last_punch_in_time || !logs?.last_punch_out_time) && (
+          <View style={styles.buttonContainer}>
+            <Button
+              title="Punch In"
+              onPress={handlePunchIn}
+              style={styles.button}
+              disabled={
+                !!logs?.last_punch_in_time || !allowPunchIn || timerRunning
+              }
+            />
+            <Button
+              title="Punch Out"
+              onPress={handlePunchOut}
+              style={styles.button}
+              filled={false}
+              disabled={
+                !logs?.last_punch_in_time || !!logs?.last_punch_out_time
+              }
+            />
+          </View>
+        )}
+
       <CardDetailsModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         logs={logs}
         startTime={startTime}
         endTime={endTime}
+        scheduleDate={scheduleDate}
       />
     </View>
   );

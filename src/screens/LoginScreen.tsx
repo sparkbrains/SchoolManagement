@@ -89,7 +89,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
         } else {
           let errors = arrayString(res);
           setErrors(errors);
-          console.log('err===', errors);
         }
         setIsLoading(false);
       });

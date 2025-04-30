@@ -84,8 +84,6 @@ export default function Fetch(
           return dataParse;
         })
         .catch((err: any) => {
-          console.log('err1===', err);
-
           if (err?.response?.status === 500) {
             return {err: ['Something Went Wrong'], status: false};
           } else {
@@ -93,7 +91,6 @@ export default function Fetch(
           }
         });
     } catch (error) {
-      console.log('err2===', error);
       return {err: ['Something Went Wrong'], status: false};
     }
   };

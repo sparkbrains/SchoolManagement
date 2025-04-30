@@ -18,6 +18,7 @@ interface CardDetailsModalProps {
   logs: any;
   startTime: string;
   endTime: string;
+  scheduleDate: string;
 }
 
 const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
@@ -26,6 +27,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
   logs,
   startTime,
   endTime,
+  scheduleDate,
 }) => {
   const staticPunchInTime = logs?.last_punch_in_time
     ? moment(logs?.last_punch_in_time, 'HH:mm:ss').format('LT')
@@ -35,9 +37,10 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
     : 'N/A';
   const punchInDifference = logs?.punch_in_diff;
   const punchOutDifference = logs?.punch_out_diff;
-  const punchInLateReason = logs?.punch_in_late_reason;
-  const punchOutLateReason = logs?.punch_out_early_reason;
+  const punchInLateReason = logs?.punch_in_late_reason?.trim();
+  const punchOutLateReason = logs?.punch_out_early_reason?.trim();
   const totalTimeSpent = logs?.total_time_spent_minutes || 'N/A';
+  const scheduleFor = scheduleDate || 'N/A';
 
   return (
     <Modal
@@ -56,6 +59,18 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
           <ScrollView
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}>
+            <View style={{flexDirection: 'row'}}>
+              <StyledText
+                text={'Schedule For: '}
+                fontSize={fontSize.h4}
+                style={styles.infoText}
+              />
+              <StyledText
+                text={scheduleFor}
+                fontSize={fontSize.h4}
+                style={styles.labelText}
+              />
+            </View>
             <View style={{flexDirection: 'row'}}>
               <StyledText
                 text={'Scheduled Time: '}

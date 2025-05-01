@@ -32,3 +32,17 @@ export const formatTime = (seconds: number) => {
   const remainingSeconds = seconds % 60;
   return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
 };
+
+export const getCurrentDayFromDate = (dateString: string): string => {
+  try {
+    const date = moment(dateString, 'YYYY-MM-DD');
+    if (date.isValid()) {
+      return date.format('dddd');
+    } else {
+      return '';
+    }
+  } catch (error) {
+    console.error('Error parsing date string:', error);
+    return '';
+  }
+};

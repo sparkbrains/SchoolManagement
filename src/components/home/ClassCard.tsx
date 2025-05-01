@@ -28,6 +28,7 @@ interface CardProps {
   isLate?: boolean;
   scheduleDate?: boolean;
   timerRunning?: boolean;
+  dataType: 'currentDay' | 'previous' | 'next';
 }
 
 const Card: React.FC<CardProps> = ({
@@ -43,14 +44,13 @@ const Card: React.FC<CardProps> = ({
   isLate,
   scheduleDate,
   timerRunning,
+  dataType,
 }) => {
   const now = moment();
   const start = moment(startTime, 'HH:mm:ss');
   const end = moment(endTime, 'HH:mm:ss');
   const isWithinTime = now.isAfter(start);
   const allowPunchIn = now.isBetween(start, end);
-
-  console.log('check====>>', isEarly, isLate, startTime, endTime);
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -69,20 +69,23 @@ const Card: React.FC<CardProps> = ({
             alignItems: 'center',
             gap: 6,
           }}>
-          <Badge
-            status={status}
-            isValid={
-              logs?.last_punch_out_time &&
-              logs?.last_punch_in_time &&
-              !isEarly &&
-              !isLate
-            }
-          />
+          {(dataType === 'currentDay' || dataType === 'previous') && (
+            <Badge
+              status={status}
+              isValid={
+                logs?.last_punch_out_time &&
+                logs?.last_punch_in_time &&
+                !isEarly &&
+                !isLate
+              }
+            />
+          )}
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Icon name={'eye-outline'} size={20} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
       </View>
+
       <StyledText
         text={`${moment(startTime, 'HH:mm:ss').format('LT')} - ${moment(
           endTime,
@@ -92,7 +95,8 @@ const Card: React.FC<CardProps> = ({
         style={styles.cardText}
       />
 
-      {isWithinTime &&
+      {dataType === 'currentDay' &&
+        isWithinTime &&
         (!logs?.last_punch_in_time || !logs?.last_punch_out_time) && (
           <View style={styles.buttonContainer}>
             <Button

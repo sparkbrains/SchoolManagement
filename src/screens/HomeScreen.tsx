@@ -8,6 +8,7 @@ import {
   Dimensions,
   TouchableOpacity,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import {HomeScreenProps} from '../types/screen-props';
 import StyledText from '../components/Text';
@@ -17,11 +18,15 @@ import {borderRadius, colors, fontSize, spacing} from '../styles/base';
 import Card from '../components/home/ClassCard';
 import Fetch from '../helpers/fetch';
 import moment from 'moment';
-import {calculateElapsedTime} from '../helpers/common-functions';
+import {
+  calculateElapsedTime,
+  getCurrentDayFromDate,
+} from '../helpers/common-functions';
 import ScreenLoader from '../components/ScreenLoader';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import CustomModal from '../components/CustomModal';
 import {CommonActions} from '@react-navigation/native';
+import SwipeableComponent from '../components/SwipeableView';
 
 type ClassType = {
   class_info: {
@@ -77,14 +82,59 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showTimerPopup, setShowTimerPopup] = useState(false);
+  const [currentDate, setCurrentDate] = useState(moment().format('YYYY-MM-DD'));
+  const [showPagerLoader, setShowPagerLoader] = useState(false);
+  const [dateType, setDateType] = useState<'currentDay' | 'previous' | 'next'>(
+    'currentDay',
+  );
 
   const popupShown = useRef(false);
 
+  const goToPreviousDay = () => {
+    setDateType('previous');
+    const previousDate = moment(currentDate, 'YYYY-MM-DD')
+      .subtract(1, 'day')
+      .format('YYYY-MM-DD');
+    fetchDataForAnotherDay(previousDate);
+    setCurrentDate(previousDate);
+  };
+
+  const goToNextDay = () => {
+    setDateType('next');
+    const nextDate = moment(currentDate, 'YYYY-MM-DD')
+      .add(1, 'day')
+      .format('YYYY-MM-DD');
+    fetchDataForAnotherDay(nextDate);
+    setCurrentDate(nextDate);
+  };
+
+  const fetchDataForAnotherDay = (date: string) => {
+    const isToday = moment(date).isSame(moment(), 'day');
+    if (isToday) {
+      fetchData();
+      return;
+    }
+    const day = getCurrentDayFromDate(date);
+    setShowPagerLoader(true);
+    Fetch(`teachers/previous-classes/?date=${date}&day=${day}`).then(
+      (res: any) => {
+        if (res.status) {
+          setData(res?.data);
+        }
+        setShowPagerLoader(false);
+      },
+    );
+  };
+
   const fetchData = () => {
-    setIsLoading(true);
+    // check for initial data load has happened or not, if it has happened then no need to show full page loader
+    if (data?.slot_type) {
+      setShowPagerLoader(true);
+    } else {
+      setIsLoading(true);
+    }
+
     Fetch('teachers/today-classes').then((res: any) => {
-      console.log('classes===', res);
-      setIsLoading(false);
       if (res.status) {
         if (!res?.data?.data?.length) {
           setTimerRunning(false);
@@ -99,6 +149,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           teacher: res?.teacher,
         });
       }
+      setIsLoading(false);
+      setShowPagerLoader(false);
     });
   };
 
@@ -196,28 +248,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     });
   };
 
-  const getRemainingTimeTitle = (
-    endTime: string,
-    elapsedTime: string,
-  ): string => {
-    if (!endTime || !elapsedTime) return 'Time information unavailable';
-
-    const now = moment();
-    const [endHour, endMinute] = endTime.split(':').map(Number);
-    const end = moment().set({hour: endHour, minute: endMinute, second: 0});
-
-    const elapsed = moment.duration(elapsedTime);
-    const effectiveTime = now.clone().subtract(elapsed);
-
-    const remainingMinutes = end.diff(effectiveTime, 'minutes');
-
-    if (remainingMinutes < 0) {
-      return 'Time has already passed!';
-    }
-
-    return `${remainingMinutes} Minutes Remaining!`;
-  };
-
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -279,70 +309,91 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           style={styles.header}
         />
 
-        <StyledText
-          text={`Schedule for ${
-            moment(data?.slot_type, 'YYYY-MM-DD', true).isValid()
-              ? moment(data?.slot_type).format('MMMM Do, YYYY')
-              : data?.slot_type +
-                ` (${moment(moment.now()).format('DD MMM, YYYY')})`
-          }`}
-          fontSize={fontSize.h3}
-          style={styles.scheduleText}
-        />
-        {/* check if classlast_punch_in_time */}
-        {data?.data.length > 0 ? (
-          data?.data.map(classInfo => (
-            <Card
-              key={classInfo.id}
-              subject={classInfo?.subject?.name}
-              className={
-                classInfo?.class_info?.name + classInfo?.class_info?.section
-              }
-              status={
-                !classInfo?.logs?.last_punch_in_time &&
-                !classInfo?.logs?.last_punch_out_time &&
-                moment().isAfter(moment(classInfo.end_time, 'HH:mm'))
-                  ? 'Expired'
-                  : classInfo.status
-              }
-              startTime={classInfo.start_time}
-              endTime={classInfo.end_time}
-              handlePunchIn={() =>
-                handleNavigate(
-                  'PUNCH_IN',
-                  classInfo?.id,
-                  classInfo.start_time,
-                  classInfo.end_time,
-                )
-              }
-              handlePunchOut={() =>
-                handleNavigate(
-                  'PUNCH_OUT',
-                  classInfo?.id,
-                  classInfo.start_time,
-                  classInfo.end_time,
-                )
-              }
-              logs={classInfo?.logs}
-              isEarly={classInfo?.is_early}
-              isLate={classInfo?.is_late}
-              scheduleDate={`${
-                moment(data?.slot_type, 'YYYY-MM-DD', true).isValid()
-                  ? moment(data?.slot_type).format('MMMM Do, YYYY')
-                  : data?.slot_type +
-                    ` (${moment(moment.now()).format('DD MMM, YYYY')})`
-              }`}
-              timerRunning={timerRunning}
-            />
-          ))
+        <View style={styles.navigationButtons}>
+          <TouchableOpacity onPress={goToPreviousDay} style={styles.navButton}>
+            <Icon name="arrow-left" size={20} color={colors.secondary} />
+          </TouchableOpacity>
+          <StyledText
+            text={`Schedule for ${
+              moment(data?.slot_type, 'YYYY-MM-DD', true).isValid()
+                ? moment(data?.slot_type).format('MMMM Do, YYYY')
+                : data?.slot_type +
+                  ` (${moment(moment.now()).format('DD MMM, YYYY')})`
+            }`}
+            fontSize={fontSize.h3}
+            style={styles.scheduleText}
+          />
+          <TouchableOpacity onPress={goToNextDay} style={styles.navButton}>
+            <Icon name="arrow-right" size={20} color={colors.secondary} />
+          </TouchableOpacity>
+        </View>
+
+        {showPagerLoader ? (
+          <ActivityIndicator
+            style={styles.loader}
+            size={'large'}
+            color={colors.primary}
+          />
         ) : (
-          <View style={styles.emptyContainer}>
-            <StyledText
-              fontSize={fontSize?.h4}
-              text="Unfortunately no classes has been scheduled for you yet!"
-              style={{textAlign: 'center'}}
-            />
-          </View>
+          <SwipeableComponent
+            onSwipeLeft={goToNextDay}
+            onSwipeRight={goToPreviousDay}>
+            {data?.data.length > 0 ? (
+              data?.data.map(classInfo => (
+                <Card
+                  key={classInfo.id}
+                  subject={classInfo?.subject?.name}
+                  className={
+                    classInfo?.class_info?.name + classInfo?.class_info?.section
+                  }
+                  status={
+                    !classInfo?.logs?.last_punch_in_time &&
+                    !classInfo?.logs?.last_punch_out_time &&
+                    moment().isAfter(moment(classInfo.end_time, 'HH:mm'))
+                      ? 'Expired'
+                      : classInfo.status
+                  }
+                  startTime={classInfo.start_time}
+                  endTime={classInfo.end_time}
+                  handlePunchIn={() =>
+                    handleNavigate(
+                      'PUNCH_IN',
+                      classInfo?.id,
+                      classInfo.start_time,
+                      classInfo.end_time,
+                    )
+                  }
+                  handlePunchOut={() =>
+                    handleNavigate(
+                      'PUNCH_OUT',
+                      classInfo?.id,
+                      classInfo.start_time,
+                      classInfo.end_time,
+                    )
+                  }
+                  logs={classInfo?.logs}
+                  isEarly={classInfo?.is_early}
+                  isLate={classInfo?.is_late}
+                  scheduleDate={`${
+                    moment(data?.slot_type, 'YYYY-MM-DD', true).isValid()
+                      ? moment(data?.slot_type).format('MMMM Do, YYYY')
+                      : data?.slot_type +
+                        ` (${moment(moment.now()).format('DD MMM, YYYY')})`
+                  }`}
+                  timerRunning={timerRunning}
+                  dataType={dateType}
+                />
+              ))
+            ) : (
+              <View style={styles.emptyContainer}>
+                <StyledText
+                  fontSize={fontSize?.h4}
+                  text="Unfortunately no classes has been scheduled for you yet!"
+                  style={{textAlign: 'center'}}
+                />
+              </View>
+            )}
+          </SwipeableComponent>
         )}
       </ScrollView>
       <CustomModal
@@ -358,7 +409,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       <CustomModal
         visible={showTimerPopup}
         title="Alert!"
-        // title={getRemainingTimeTitle(currentClass?.end_time, elapsedTime)}
         text={`Your class ${currentClass?.subject?.name} - ${currentClass?.class_info?.name}${currentClass?.class_info?.section} is ending soon. Please remember to punch out.`}
         primaryButtonText="OK"
         onPrimaryButtonPress={() => setShowTimerPopup(false)}
@@ -369,11 +419,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
+  loader: {
+    flex: 1,
+    color: colors.primary,
+  },
   header: {
     marginBottom: spacing.large,
     textAlign: 'center',
   },
-
   ongoingClassContainer: {
     justifyContent: 'space-between',
     backgroundColor: colors.primary,
@@ -382,6 +435,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'absolute',
     width: Dimensions.get('window').width,
+    zIndex: 1,
   },
   ongoingClassText: {
     color: colors.white,
@@ -392,27 +446,27 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: fontSize.h5,
   },
-
   logoutButton: {
     marginTop: spacing.large,
   },
-
-  logoContainer: {alignItems: 'center', padding: spacing.large},
-
+  logoContainer: {
+    alignItems: 'center',
+    padding: spacing.large,
+  },
   logo: {
     width: 150,
     height: 150,
     borderRadius: borderRadius.large,
   },
-
   scrollContainer: {
     padding: spacing.medium,
-    paddingTop: spacing.xLarge + 20,
     flexGrow: 1,
   },
   emptyContainer: {
     flex: 1,
     paddingHorizontal: spacing.large,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   schoolName: {
     marginTop: spacing.small,
@@ -423,7 +477,19 @@ const styles = StyleSheet.create({
   scheduleText: {
     textAlign: 'center',
     color: colors.secondary,
-    marginBottom: spacing.large,
+  },
+  pagerView: {
+    flex: 1,
+  },
+  navigationButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingHorizontal: spacing.medium,
+    marginBottom: spacing.medium,
+  },
+  navButton: {
+    padding: spacing.small,
   },
 });
 

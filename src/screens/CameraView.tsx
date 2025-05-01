@@ -39,7 +39,6 @@ const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
 
     if (type === 'PUNCH_IN') {
       const lateByMinutes = currentTime.diff(start, 'minutes');
-      console.log('latebyminutes===', lateByMinutes, currentTime);
       setIsLateArrival(lateByMinutes > 5);
     }
 
@@ -200,8 +199,6 @@ const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
       </View>
     );
   }
-
-  console.log('check====', isLateArrival, isEarlyLeave, isLateLeave);
 
   const getTitle = () => {
     if (isLateArrival) {

@@ -42,6 +42,24 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
   const totalTimeSpent = logs?.total_time_spent_minutes || 'N/A';
   const scheduleFor = scheduleDate || 'N/A';
 
+  const showPunchInTextInRed =
+    logs?.last_punch_in_time &&
+    moment(logs.last_punch_in_time, 'HH:mm').diff(
+      moment(startTime, 'HH:mm'),
+      'minutes',
+    ) > 5;
+
+  const showPunchOutTextInRed =
+    logs?.last_punch_out_time &&
+    (moment(logs.last_punch_out_time, 'HH:mm').diff(
+      moment(endTime, 'HH:mm'),
+      'minutes',
+    ) > 5 ||
+      moment(endTime, 'HH:mm').diff(
+        moment(logs.last_punch_out_time, 'HH:mm'),
+        'minutes',
+      ) > 5);
+
   return (
     <Modal
       animationType="slide"
@@ -134,7 +152,10 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
               <StyledText
                 text={`${punchInDifference || 'N/A'}`}
                 fontSize={fontSize.h4}
-                style={styles.warningText}
+                // style={styles.warningText}
+                style={
+                  showPunchInTextInRed ? styles.warningText : styles.successText
+                }
               />
             </View>
 
@@ -147,7 +168,12 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
               <StyledText
                 text={`${punchOutDifference || 'N/A'}`}
                 fontSize={fontSize.h4}
-                style={styles.warningText}
+                // style={styles.warningText}
+                style={
+                  showPunchOutTextInRed
+                    ? styles.warningText
+                    : styles.successText
+                }
               />
             </View>
 
@@ -228,6 +254,11 @@ const styles = StyleSheet.create({
   closeButton: {
     marginTop: spacing.large,
     width: '100%',
+  },
+  successText: {
+    marginVertical: spacing.small,
+    fontWeight: '500',
+    color: colors.secondary,
   },
 });
 

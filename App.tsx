@@ -1,6 +1,11 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItem,
+  DrawerItemList,
+} from '@react-navigation/drawer';
 import React from 'react';
 import {StatusBar} from 'react-native';
 import HomeScreen from './src/screens/HomeScreen';
@@ -10,11 +15,25 @@ import CameraView from './src/screens/CameraView';
 import {AuthProvider, useAuth} from './src/components/context/AuthContext';
 import {AppProvider} from './src/components/context/AppContext';
 import {RootStackParamList} from './src/types/screen-props';
-import 'react-native-reanimated';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const AuthStack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator<RootStackParamList>();
+
+function CustomDrawerContent(props) {
+  return (
+    <DrawerContentScrollView {...props}>
+      <DrawerItemList {...props} />
+      <DrawerItem
+        label="Close drawer"
+        onPress={() => props.navigation.closeDrawer()}
+      />
+      <DrawerItem
+        label="Toggle drawer"
+        onPress={() => props.navigation.toggleDrawer()}
+      />
+    </DrawerContentScrollView>
+  );
+}
 
 function AuthNavigator(): React.JSX.Element {
   return (
@@ -35,7 +54,9 @@ function AuthNavigator(): React.JSX.Element {
 
 function DrawerNavigator(): React.JSX.Element {
   return (
-    <Drawer.Navigator initialRouteName="Home">
+    <Drawer.Navigator
+      drawerContent={props => <CustomDrawerContent {...props} />}
+      initialRouteName="Home">
       <Drawer.Screen name="Home" component={HomeScreen} />
       <Drawer.Screen
         name="CameraView"
@@ -55,20 +76,19 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      <StatusBar barStyle="dark-content" backgroundColor="white" />
-      {isLoggedIn ? <DrawerNavigator /> : <AuthNavigator />}
+      {/* <StatusBar barStyle="dark-content" backgroundColor="white" /> */}
+      {/* {isLoggedIn ? <DrawerNavigator /> : <AuthNavigator />} */}
+      <DrawerNavigator />
     </NavigationContainer>
   );
 }
 
 export default function AppWrapper(): React.JSX.Element {
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
-      <AuthProvider>
-        <AppProvider>
-          <App />
-        </AppProvider>
-      </AuthProvider>
-    </GestureHandlerRootView>
+    <AuthProvider>
+      <AppProvider>
+        <App />
+      </AppProvider>
+    </AuthProvider>
   );
 }

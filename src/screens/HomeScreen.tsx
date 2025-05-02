@@ -90,14 +90,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const popupShown = useRef(false);
 
-  console.log('date typpe====', dateType);
-
-  const goToPreviousDay = () => {
+  const goToPreviousDay = (date = null) => {
     // setDateType('previous');
     const today = moment().format('YYYY-MM-DD');
-    if (
-      moment(currentDate, 'YYYY-MM-DD').isBefore(moment(today, 'YYYY-MM-DD'))
-    ) {
+    if (moment(date, 'YYYY-MM-DD').isBefore(moment(today, 'YYYY-MM-DD'))) {
       setDateType('previous');
     }
 
@@ -332,7 +328,15 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         />
 
         <View style={styles.navigationButtons}>
-          <TouchableOpacity onPress={goToPreviousDay} style={styles.navButton}>
+          <TouchableOpacity
+            onPress={() =>
+              goToPreviousDay(
+                moment(currentDate, 'YYYY-MM-DD')
+                  .subtract(1, 'day')
+                  .format('YYYY-MM-DD'),
+              )
+            }
+            style={styles.navButton}>
             <Icon name="arrow-left" size={20} color={colors.secondary} />
           </TouchableOpacity>
           <StyledText
@@ -373,7 +377,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
                   .format('YYYY-MM-DD'),
               )
             }
-            onSwipeRight={goToPreviousDay}>
+            onSwipeRight={() =>
+              goToPreviousDay(
+                moment(currentDate, 'YYYY-MM-DD')
+                  .subtract(1, 'day')
+                  .format('YYYY-MM-DD'),
+              )
+            }>
             {data?.data.length > 0 ? (
               data?.data.map(classInfo => (
                 <Card

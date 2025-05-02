@@ -23,6 +23,7 @@ import {arrayString} from '../helpers/array-string';
 import {TeacherManagementIcon} from '../assets/svg-icons';
 import CustomModal from '../components/CustomModal';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {useAuth} from '../components/context/AuthContext';
 
 const initialState = {
   username: '',
@@ -35,6 +36,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+
+  const {toggleLoggedInStatus} = useAuth();
 
   const handleChange = (type: string, value: string): void => {
     setData(prevState => ({
@@ -85,7 +88,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
       ).then(res => {
         if (res.status) {
           AsyncStorage.setItem('userToken', res?.data?.access);
-          navigation.replace('Home');
+          toggleLoggedInStatus();
+          // navigation.replace('Home');
         } else {
           let errors = arrayString(res);
           setErrors(errors);

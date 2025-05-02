@@ -76,9 +76,8 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      {/* <StatusBar barStyle="dark-content" backgroundColor="white" /> */}
-      {/* {isLoggedIn ? <DrawerNavigator /> : <AuthNavigator />} */}
-      <DrawerNavigator />
+      <StatusBar barStyle="dark-content" backgroundColor="white" />
+      {isLoggedIn ? <DrawerNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 }

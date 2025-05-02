@@ -9,8 +9,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   isLoading: boolean;
+  toggleLoggedInStatus: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,6 +23,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const toggleLoggedInStatus = () => {
+    setIsLoggedIn(prevState => !prevState);
+  };
+
   useEffect(() => {
     const checkLoginStatus = async () => {
       const token = await AsyncStorage.getItem('userToken');
@@ -34,7 +38,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{isLoggedIn, setIsLoggedIn, isLoading}}>
+    <AuthContext.Provider value={{isLoggedIn, toggleLoggedInStatus, isLoading}}>
       {children}
     </AuthContext.Provider>
   );

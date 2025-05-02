@@ -90,6 +90,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const popupShown = useRef(false);
 
+  console.log('date typpe====', dateType);
+
   const goToPreviousDay = () => {
     setDateType('previous');
     const previousDate = moment(currentDate, 'YYYY-MM-DD')
@@ -128,6 +130,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const fetchData = () => {
     // check for initial data load has happened or not, if it has happened then no need to show full page loader
+    setDateType('currentDay');
     if (data?.slot_type) {
       setShowPagerLoader(true);
     } else {
@@ -267,7 +270,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         refreshControl={
-          <RefreshControl refreshing={false} onRefresh={fetchData} />
+          <RefreshControl
+            refreshing={false}
+            onRefresh={() => {
+              fetchData();
+              setCurrentDate(moment().format('YYYY-MM-DD'));
+            }}
+          />
         }>
         {timerRunning && (
           <View style={styles.ongoingClassContainer}>

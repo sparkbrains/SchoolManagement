@@ -397,7 +397,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
               <View style={styles.emptyContainer}>
                 <StyledText
                   fontSize={fontSize?.h4}
-                  text="Unfortunately no classes has been scheduled for you yet!"
+                  text="Unfortunately no classes has been scheduled for this day!"
                   style={{textAlign: 'center'}}
                 />
               </View>

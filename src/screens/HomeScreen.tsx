@@ -93,7 +93,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   console.log('date typpe====', dateType);
 
   const goToPreviousDay = () => {
-    setDateType('previous');
+    // setDateType('previous');
+    const today = moment().format('YYYY-MM-DD');
+    if (
+      moment(currentDate, 'YYYY-MM-DD').isBefore(moment(today, 'YYYY-MM-DD'))
+    ) {
+      setDateType('previous');
+    }
+
     const previousDate = moment(currentDate, 'YYYY-MM-DD')
       .subtract(1, 'day')
       .format('YYYY-MM-DD');
@@ -101,8 +108,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     setCurrentDate(previousDate);
   };
 
-  const goToNextDay = () => {
-    setDateType('next');
+  const goToNextDay = (date = null) => {
+    // setDateType('next');
+    const today = moment().format('YYYY-MM-DD');
+    if (moment(date, 'YYYY-MM-DD').isAfter(moment(today, 'YYYY-MM-DD'))) {
+      setDateType('next');
+    }
+
     const nextDate = moment(currentDate, 'YYYY-MM-DD')
       .add(1, 'day')
       .format('YYYY-MM-DD');
@@ -112,6 +124,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const fetchDataForAnotherDay = (date: string) => {
     const isToday = moment(date).isSame(moment(), 'day');
+
     if (isToday) {
       fetchData();
       return;
@@ -332,7 +345,15 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
             fontSize={fontSize.h3}
             style={styles.scheduleText}
           />
-          <TouchableOpacity onPress={goToNextDay} style={styles.navButton}>
+          <TouchableOpacity
+            onPress={() =>
+              goToNextDay(
+                moment(currentDate, 'YYYY-MM-DD')
+                  .add(1, 'day')
+                  .format('YYYY-MM-DD'),
+              )
+            }
+            style={styles.navButton}>
             <Icon name="arrow-right" size={20} color={colors.secondary} />
           </TouchableOpacity>
         </View>
@@ -345,7 +366,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           />
         ) : (
           <SwipeableComponent
-            onSwipeLeft={goToNextDay}
+            onSwipeLeft={() =>
+              goToNextDay(
+                moment(currentDate, 'YYYY-MM-DD')
+                  .add(1, 'day')
+                  .format('YYYY-MM-DD'),
+              )
+            }
             onSwipeRight={goToPreviousDay}>
             {data?.data.length > 0 ? (
               data?.data.map(classInfo => (

@@ -195,12 +195,9 @@ const styles = StyleSheet.create({
     gap: 8,
     width: '100%',
     height: 44,
-    alignSelf: 'center',
   },
   infoButtonText: {
     color: colors.primary,
-    textAlignVertical: 'center',
-    fontSize: fontSize.h1,
   },
 });
 

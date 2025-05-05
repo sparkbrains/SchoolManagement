@@ -123,11 +123,12 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
                   />
                   {logs?.punch_in_photo && (
                     <TouchableOpacity
+                      style={styles.iconButton}
                       onPress={() => setShowImagePreview('punch-in-photo')}>
                       <Icon
                         name={'eye-outline'}
                         size={20}
-                        color={colors.textSecondary}
+                        color={colors.white}
                       />
                     </TouchableOpacity>
                   )}
@@ -148,11 +149,12 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
                   />
                   {logs?.punch_out_photo && (
                     <TouchableOpacity
+                      style={styles.iconButton}
                       onPress={() => setShowImagePreview('punch-out-photo')}>
                       <Icon
                         name={'eye-outline'}
                         size={20}
-                        color={colors.textSecondary}
+                        color={colors.white}
                       />
                     </TouchableOpacity>
                   )}
@@ -205,49 +207,6 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
                   }
                 />
               </View>
-
-              {/* <View style={{flexDirection: 'row'}}>
-                <StyledText
-                  text="Punch In Photo: "
-                  fontSize={fontSize.h4}
-                  style={styles.infoText}
-                />
-                {logs?.punch_in_photo ? (
-                  <TouchableOpacity
-                    onPress={() => setShowImagePreview('punch-in-photo')}
-                    style={{justifyContent: 'center'}}>
-                    <Text style={styles.textButton}>View Image</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <StyledText
-                    text={'N/A'}
-                    fontSize={fontSize.h4}
-                    style={styles.labelText}
-                  />
-                )}
-              </View> */}
-
-              {/* <View style={{flexDirection: 'row'}}>
-                <StyledText
-                  text="Punch Out Photo: "
-                  fontSize={fontSize.h4}
-                  style={styles.infoText}
-                />
-
-                {logs?.punch_out_photo ? (
-                  <TouchableOpacity
-                    onPress={() => setShowImagePreview('punch-out-photo')}
-                    style={{justifyContent: 'center'}}>
-                    <Text style={styles.textButton}>View Image</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <StyledText
-                    text={'N/A'}
-                    fontSize={fontSize.h4}
-                    style={styles.labelText}
-                  />
-                )}
-              </View> */}
 
               <View style={{flexDirection: 'row'}}>
                 <StyledText
@@ -353,6 +312,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: spacing.small,
+  },
+
+  iconButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 25,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

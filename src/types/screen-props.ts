@@ -10,6 +10,7 @@ export type RootStackParamList = {
     scheduleId: string;
     onGoBack: (type: string) => void;
   };
+  Reports: undefined;
 };
 
 type ScreenNavigationProp<T extends keyof RootStackParamList> =
@@ -29,3 +30,4 @@ export type HomeScreenProps = ScreenProps<'Home'>;
 export type LoginScreenProps = ScreenProps<'Login'>;
 export type ForgotPasswordScreenProps = ScreenProps<'ForgotPassword'>;
 export type CameraScreenProps = ScreenProps<'CameraView'>;
+export type ReportScreenProps = ScreenProps<'Reports'>;

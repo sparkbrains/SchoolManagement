@@ -26,7 +26,7 @@ interface CardProps {
   handlePunchOut: () => void;
   isEarly?: boolean;
   isLate?: boolean;
-  scheduleDate?: boolean;
+  scheduleDate: string;
   timerRunning?: boolean;
   dataType: 'currentDay' | 'previous' | 'next';
 }

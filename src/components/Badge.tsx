@@ -3,7 +3,7 @@ import StyledText from './Text';
 
 type Props = {
   status: string;
-  isPunchOutGreater?: boolean;
+  isValid?: boolean;
 };
 
 const Badge: React.FC<Props> = ({status, isValid}) => {

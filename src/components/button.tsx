@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   disabled: {
     backgroundColor: colors.textSecondary,
     borderColor: colors.textSecondary,
-    opacity: 0.7
+    opacity: 0.7,
   },
   text: {
     fontWeight: 'bold',

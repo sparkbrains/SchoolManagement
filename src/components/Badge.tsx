@@ -3,7 +3,7 @@ import StyledText from './Text';
 
 type Props = {
   status: string;
-  isPunchOutGreater?: boolean;
+  isValid?: boolean;
 };
 
 const Badge: React.FC<Props> = ({status, isValid}) => {
@@ -28,7 +28,7 @@ const Badge: React.FC<Props> = ({status, isValid}) => {
   return (
     <StyledText
       text={status}
-      fontSize={fontSize.h5}
+      fontSize={10}
       style={{
         backgroundColor: getStatusColor(status),
         color: colors.white,

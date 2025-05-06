@@ -43,6 +43,12 @@ type ClassType = {
     name: string;
   };
   status: string;
+  logs: {
+    last_punch_in_time: string;
+    last_punch_out_time: string;
+  };
+  is_early: boolean;
+  is_late: boolean;
 };
 
 type ClassList = {
@@ -57,6 +63,7 @@ type ClassList = {
       name: string;
     };
   };
+  slot_type: string;
 };
 
 const initialState = {
@@ -90,8 +97,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const popupShown = useRef(false);
 
-  const goToPreviousDay = () => {
-    setDateType('previous');
+  const goToPreviousDay = (date = '') => {
+    const today = moment().format('YYYY-MM-DD');
+    if (moment(date, 'YYYY-MM-DD').isBefore(moment(today, 'YYYY-MM-DD'))) {
+      setDateType('previous');
+    }
+
     const previousDate = moment(currentDate, 'YYYY-MM-DD')
       .subtract(1, 'day')
       .format('YYYY-MM-DD');
@@ -99,8 +110,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     setCurrentDate(previousDate);
   };
 
-  const goToNextDay = () => {
-    setDateType('next');
+  const goToNextDay = (date = '') => {
+    const today = moment().format('YYYY-MM-DD');
+    if (moment(date, 'YYYY-MM-DD').isAfter(moment(today, 'YYYY-MM-DD'))) {
+      setDateType('next');
+    }
+
     const nextDate = moment(currentDate, 'YYYY-MM-DD')
       .add(1, 'day')
       .format('YYYY-MM-DD');
@@ -110,6 +125,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const fetchDataForAnotherDay = (date: string) => {
     const isToday = moment(date).isSame(moment(), 'day');
+
     if (isToday) {
       fetchData();
       return;
@@ -136,6 +152,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     }
 
     Fetch('teachers/today-classes').then((res: any) => {
+      console.log('response====', res);
       if (res.status) {
         if (!res?.data?.data?.length) {
           setTimerRunning(false);
@@ -228,8 +245,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const handleNavigate = async (
     type: string,
     classId: string,
-    startTime,
-    endTime,
+    startTime: string,
+    endTime: string,
   ) => {
     setCurrentClass(data?.data.find(item => item.id === classId) || null);
     navigation.navigate('CameraView', {
@@ -317,20 +334,37 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         />
 
         <View style={styles.navigationButtons}>
-          <TouchableOpacity onPress={goToPreviousDay} style={styles.navButton}>
+          <TouchableOpacity
+            onPress={() =>
+              goToPreviousDay(
+                moment(currentDate, 'YYYY-MM-DD')
+                  .subtract(1, 'day')
+                  .format('YYYY-MM-DD'),
+              )
+            }
+            style={styles.navButton}>
             <Icon name="arrow-left" size={20} color={colors.secondary} />
           </TouchableOpacity>
           <StyledText
             text={`Schedule for ${
               moment(data?.slot_type, 'YYYY-MM-DD', true).isValid()
-                ? moment(data?.slot_type).format('MMMM Do, YYYY')
+                ? moment(data?.slot_type, 'YYYY-MM-DD').format('dddd') +
+                  ` (${moment(data?.slot_type).format('DD MMM, YYYY')})`
                 : data?.slot_type +
                   ` (${moment(moment.now()).format('DD MMM, YYYY')})`
             }`}
             fontSize={fontSize.h3}
             style={styles.scheduleText}
           />
-          <TouchableOpacity onPress={goToNextDay} style={styles.navButton}>
+          <TouchableOpacity
+            onPress={() =>
+              goToNextDay(
+                moment(currentDate, 'YYYY-MM-DD')
+                  .add(1, 'day')
+                  .format('YYYY-MM-DD'),
+              )
+            }
+            style={styles.navButton}>
             <Icon name="arrow-right" size={20} color={colors.secondary} />
           </TouchableOpacity>
         </View>
@@ -343,8 +377,20 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           />
         ) : (
           <SwipeableComponent
-            onSwipeLeft={goToNextDay}
-            onSwipeRight={goToPreviousDay}>
+            onSwipeLeft={() =>
+              goToNextDay(
+                moment(currentDate, 'YYYY-MM-DD')
+                  .add(1, 'day')
+                  .format('YYYY-MM-DD'),
+              )
+            }
+            onSwipeRight={() =>
+              goToPreviousDay(
+                moment(currentDate, 'YYYY-MM-DD')
+                  .subtract(1, 'day')
+                  .format('YYYY-MM-DD'),
+              )
+            }>
             {data?.data.length > 0 ? (
               data?.data.map(classInfo => (
                 <Card
@@ -395,7 +441,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
               <View style={styles.emptyContainer}>
                 <StyledText
                   fontSize={fontSize?.h4}
-                  text="Unfortunately no classes has been scheduled for you yet!"
+                  text="Unfortunately no classes has been scheduled for this day!"
                   style={{textAlign: 'center'}}
                 />
               </View>

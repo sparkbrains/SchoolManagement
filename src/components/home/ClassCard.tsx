@@ -26,7 +26,7 @@ interface CardProps {
   handlePunchOut: () => void;
   isEarly?: boolean;
   isLate?: boolean;
-  scheduleDate?: boolean;
+  scheduleDate: string;
   timerRunning?: boolean;
   dataType: 'currentDay' | 'previous' | 'next';
 }
@@ -80,21 +80,24 @@ const Card: React.FC<CardProps> = ({
               }
             />
           )}
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
-            <Icon name={'eye-outline'} size={20} color={colors.textSecondary} />
-          </TouchableOpacity>
         </View>
       </View>
 
-      <StyledText
-        text={`${moment(startTime, 'HH:mm:ss').format('LT')} - ${moment(
-          endTime,
-          'HH:mm:ss',
-        ).format('LT')}`}
-        fontSize={fontSize.h3}
-        style={styles.cardText}
-      />
-
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+        <StyledText
+          text={`${moment(startTime, 'HH:mm:ss').format('LT')} - ${moment(
+            endTime,
+            'HH:mm:ss',
+          ).format('LT')}`}
+          fontSize={fontSize.h3}
+          style={styles.cardText}
+        />
+      </View>
       {dataType === 'currentDay' &&
         isWithinTime &&
         (!logs?.last_punch_in_time || !logs?.last_punch_out_time) && (
@@ -119,6 +122,22 @@ const Card: React.FC<CardProps> = ({
           </View>
         )}
 
+      <TouchableOpacity
+        style={styles.infoButton}
+        onPress={() => setModalVisible(true)}
+        activeOpacity={0.7}>
+        <Icon
+          name={'information-circle-outline'}
+          size={20}
+          color={colors.info}
+        />
+        <StyledText
+          text="Details"
+          fontSize={fontSize.h4}
+          style={styles.infoButtonText}
+        />
+      </TouchableOpacity>
+
       <CardDetailsModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
@@ -132,9 +151,6 @@ const Card: React.FC<CardProps> = ({
 };
 
 const styles = StyleSheet.create({
-  infoText: {
-    marginBottom: spacing.small,
-  },
   card: {
     backgroundColor: colors.white,
     borderRadius: borderRadius.medium,
@@ -142,24 +158,46 @@ const styles = StyleSheet.create({
     marginBottom: spacing.large - 4,
     ...boxShadow,
   },
+
   cardTitle: {
     fontWeight: 'bold',
-    marginBottom: spacing.medium + 2,
   },
+
   cardText: {
-    marginBottom: spacing.medium + 2,
+    marginBottom: spacing.medium,
   },
+
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginBottom: spacing.medium,
   },
+
   button: {
     flex: 1,
     marginHorizontal: 5,
   },
+
   classAndStatus: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+
+  infoButton: {
+    backgroundColor: 'transparent',
+    borderRadius: borderRadius.large,
+    paddingHorizontal: spacing.medium,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.info,
+    gap: 8,
+    width: '100%',
+    height: 44,
+  },
+  infoButtonText: {
+    color: colors.primary,
   },
 });
 

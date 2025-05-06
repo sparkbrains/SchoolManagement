@@ -8,6 +8,8 @@ export type RootStackParamList = {
   CameraView: {
     type: string;
     scheduleId: string;
+    startTime: string;
+    endTime: string;
     onGoBack: (type: string) => void;
   };
   Reports: undefined;

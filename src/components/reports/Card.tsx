@@ -1,11 +1,5 @@
 import {StyleSheet, Text, View} from 'react-native';
-import {
-  borderRadius,
-  boxShadow,
-  colors,
-  fontSize,
-  spacing,
-} from '../../styles/base';
+import {borderRadius, colors, fontSize, spacing} from '../../styles/base';
 import StyledText from '../Text';
 
 type Props = {
@@ -36,7 +30,6 @@ const Card: React.FC<Props> = ({title, time, description, iconName}) => {
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
     margin: spacing.small,
     backgroundColor: colors.white,
     borderRadius: borderRadius.medium,

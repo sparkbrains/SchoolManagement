@@ -90,8 +90,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const popupShown = useRef(false);
 
-  console.log('date typpe====', dateType);
-
   const goToPreviousDay = () => {
     setDateType('previous');
     const previousDate = moment(currentDate, 'YYYY-MM-DD')

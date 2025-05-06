@@ -1,9 +1,16 @@
 import React, {useState} from 'react';
-import {View, StyleSheet, FlatList, SafeAreaView} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
 import {borderRadius, colors, spacing} from '../styles/base';
 import FilterBadge from '../components/reports/FilterBadge';
-import {reportsCardData} from '../static/data';
+import {dummyData, reportsCardData} from '../static/data';
 import Card from '../components/reports/Card';
+import DetailedInfo from '../components/reports/DetailedInfo';
 
 type FilterType = 'Today' | 'This Week' | 'This Month' | 'Custom';
 const filters: FilterType[] = ['Today', 'This Week', 'This Month', 'Custom'];
@@ -27,20 +34,28 @@ const Reports: React.FC = () => {
           />
         ))}
       </View>
+
+      <View style={styles.cardContainer}>
+        {reportsCardData.map((item, index) => (
+          <View style={styles.cardWrapper} key={index}>
+            <Card
+              title={item.title}
+              time={item.time}
+              description={item.description}
+              iconName={item.iconName}
+            />
+          </View>
+        ))}
+      </View>
+
       <FlatList
-        data={reportsCardData}
-        renderItem={({item}) => (
-          <Card
-            title={item.title}
-            time={item.time}
-            description={item.description}
-            iconName={item.iconName}
-          />
-        )}
-        keyExtractor={(item, index) => index.toString()}
-        numColumns={2} // Two cards per row
-        contentContainerStyle={styles.container}
+        data={dummyData}
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={({item}) => <DetailedInfo data={item} />}
+        contentContainerStyle={styles.detailedReportSection}
       />
+
+      
     </SafeAreaView>
   );
 };
@@ -49,13 +64,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
+    padding: spacing.medium,
   },
   filterContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    padding: spacing.medium,
     borderRadius: borderRadius.small,
+    marginBottom: spacing.small,
+  },
+  cardContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  cardWrapper: {
+    width: '50%',
+  },
+  detailedReportSection: {
+    marginTop: spacing.medium,
   },
 });
 

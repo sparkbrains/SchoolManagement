@@ -1,16 +1,11 @@
 import React, {useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  SafeAreaView,
-  ScrollView,
-} from 'react-native';
+import {View, StyleSheet, SafeAreaView} from 'react-native';
 import {borderRadius, colors, spacing} from '../styles/base';
 import FilterBadge from '../components/reports/FilterBadge';
-import {dummyData, reportsCardData} from '../static/data';
+import {dates, detailedInfo, reportsCardData, timeSlots} from '../static/data';
 import Card from '../components/reports/Card';
-import DetailedInfo from '../components/reports/DetailedInfo';
+import ScheduleTable from '../components/reports/ScheduleTable';
+import {ScrollView} from 'react-native';
 
 type FilterType = 'Today' | 'This Week' | 'This Month' | 'Custom';
 const filters: FilterType[] = ['Today', 'This Week', 'This Month', 'Custom'];
@@ -24,38 +19,37 @@ const Reports: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.filterContainer}>
-        {filters.map((filter: FilterType, index: number) => (
-          <FilterBadge
-            key={index}
-            filter={filter}
-            handleChangeFilter={handleChangeFilter}
-            selectedFilter={selectedFilter}
-          />
-        ))}
-      </View>
-
-      <View style={styles.cardContainer}>
-        {reportsCardData.map((item, index) => (
-          <View style={styles.cardWrapper} key={index}>
-            <Card
-              title={item.title}
-              time={item.time}
-              description={item.description}
-              iconName={item.iconName}
+      <ScrollView>
+        <View style={styles.filterContainer}>
+          {filters.map((filter: FilterType, index: number) => (
+            <FilterBadge
+              key={index}
+              filter={filter}
+              handleChangeFilter={handleChangeFilter}
+              selectedFilter={selectedFilter}
             />
-          </View>
-        ))}
-      </View>
+          ))}
+        </View>
 
-      <FlatList
-        data={dummyData}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={({item}) => <DetailedInfo data={item} />}
-        contentContainerStyle={styles.detailedReportSection}
-      />
+        <View style={styles.cardContainer}>
+          {reportsCardData.map((item, index) => (
+            <View style={styles.cardWrapper} key={index}>
+              <Card
+                title={item.title}
+                time={item.time}
+                description={item.description}
+                iconName={item.iconName}
+              />
+            </View>
+          ))}
+        </View>
 
-      
+        <ScheduleTable
+          columns={timeSlots}
+          rows={dates}
+          detailedInfo={detailedInfo}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 };

@@ -6,6 +6,7 @@ import {dates, detailedInfo, reportsCardData, timeSlots} from '../static/data';
 import Card from '../components/reports/Card';
 import ScheduleTable from '../components/reports/ScheduleTable';
 import {ScrollView} from 'react-native';
+import DateTimePickerUtility from '../components/DateTimePicker';
 
 type FilterType = 'Today' | 'This Week' | 'This Month' | 'Custom';
 const filters: FilterType[] = ['Today', 'This Week', 'This Month', 'Custom'];
@@ -20,6 +21,7 @@ const Reports: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
+        <DateTimePickerUtility onConfirm={() => {}} />
         <View style={styles.filterContainer}>
           {filters.map((filter: FilterType, index: number) => (
             <FilterBadge

@@ -81,12 +81,12 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
                   <View>
                     <StyledText
                       fontSize={fontSize.h5}
-                      text={`In: ${info.inTime}`}
+                      text={`In Time: ${info.inTime}`}
                       style={styles.cellText}
                     />
                     <StyledText
                       fontSize={fontSize.h5}
-                      text={`Out: ${info.outTime}`}
+                      text={`Out Time: ${info.outTime}`}
                       style={styles.cellText}
                     />
                     <StyledText
@@ -102,7 +102,7 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
                     <TouchableOpacity
                       style={styles.photoRow}
                       onPress={() => setShowImagePreview(true)}>
-                      <Icon name="photo" size={20} color={colors.primary} />
+                      <Icon name="visibility" size={20} color={colors.primary} />
                       <StyledText
                         fontSize={fontSize.h5}
                         text="Punch In Photo"
@@ -112,7 +112,7 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
                     <TouchableOpacity
                       style={styles.photoRow}
                       onPress={() => setShowImagePreview(true)}>
-                      <Icon name="photo" size={20} color={colors.primary} />
+                      <Icon name="visibility" size={20} color={colors.primary} />
                       <StyledText
                         fontSize={fontSize.h5}
                         text="Punch Out Photo"

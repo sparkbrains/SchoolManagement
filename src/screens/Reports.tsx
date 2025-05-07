@@ -59,6 +59,7 @@ const Reports: React.FC = () => {
                 onConfirm={() => {}}
                 handleChange={value => handleDateChange('startDate', value)}
                 selectedDate={selectedDates?.startDate}
+                label="Start Date"
               />
             </View>
             <View style={styles.datePicker}>
@@ -66,6 +67,7 @@ const Reports: React.FC = () => {
                 onConfirm={() => {}}
                 handleChange={value => handleDateChange('endDate', value)}
                 selectedDate={selectedDates?.endDate}
+                label="End Date"
               />
             </View>
           </View>

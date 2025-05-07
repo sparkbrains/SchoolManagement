@@ -1,27 +1,47 @@
 import React, {useState} from 'react';
 import {View, StyleSheet, SafeAreaView} from 'react-native';
-import {borderRadius, colors, spacing} from '../styles/base';
+import {borderRadius, colors, fontSize, spacing} from '../styles/base';
 import FilterBadge from '../components/reports/FilterBadge';
 import {dates, detailedInfo, reportsCardData, timeSlots} from '../static/data';
 import Card from '../components/reports/Card';
 import ScheduleTable from '../components/reports/ScheduleTable';
 import {ScrollView} from 'react-native';
 import DateTimePickerUtility from '../components/DateTimePicker';
+import StyledText from '../components/Text';
 
 type FilterType = 'Today' | 'This Week' | 'This Month' | 'Custom';
 const filters: FilterType[] = ['Today', 'This Week', 'This Month', 'Custom'];
+type CustomDatePicker = {
+  startDate: Date | null;
+  endDate: Date | null;
+};
 
 const Reports: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('Today');
+  const [selectedDates, setSelectedDates] = useState<CustomDatePicker>({
+    startDate: null,
+    endDate: null,
+  });
 
   const handleChangeFilter = (filter: FilterType) => {
     setSelectedFilter(filter);
   };
 
+  const handleDateChange = (
+    type: 'startDate' | 'endDate',
+    value: Date | null,
+  ) => {
+    setSelectedDates(prevState => {
+      return {
+        ...prevState,
+        [type]: value,
+      };
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <DateTimePickerUtility onConfirm={() => {}} />
         <View style={styles.filterContainer}>
           {filters.map((filter: FilterType, index: number) => (
             <FilterBadge
@@ -32,6 +52,24 @@ const Reports: React.FC = () => {
             />
           ))}
         </View>
+        {selectedFilter === 'Custom' && (
+          <View style={styles.datePickersContainer}>
+            <View style={styles.datePicker}>
+              <DateTimePickerUtility
+                onConfirm={() => {}}
+                handleChange={value => handleDateChange('startDate', value)}
+                selectedDate={selectedDates?.startDate}
+              />
+            </View>
+            <View style={styles.datePicker}>
+              <DateTimePickerUtility
+                onConfirm={() => {}}
+                handleChange={value => handleDateChange('endDate', value)}
+                selectedDate={selectedDates?.endDate}
+              />
+            </View>
+          </View>
+        )}
 
         <View style={styles.cardContainer}>
           {reportsCardData.map((item, index) => (
@@ -45,6 +83,12 @@ const Reports: React.FC = () => {
             </View>
           ))}
         </View>
+
+        <StyledText
+          fontSize={fontSize.h4}
+          style={styles.detailedReportText}
+          text="Detailed Report"
+        />
 
         <ScheduleTable
           columns={timeSlots}
@@ -61,6 +105,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
     padding: spacing.medium,
+  },
+  datePicker: {
+    width: '48%',
+  },
+  datePickersContainer: {
+    flexDirection: 'row',
+    marginVertical: spacing.small,
+    paddingHorizontal: spacing.small,
+    justifyContent: 'space-between',
+  },
+  detailedReportText: {
+    marginVertical: spacing.small,
+    fontWeight: 'bold',
   },
   filterContainer: {
     flexDirection: 'row',

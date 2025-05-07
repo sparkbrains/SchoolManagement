@@ -76,6 +76,7 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
                   style={styles.cellText}
                 />
               </TableCell>
+
               {detailedInfo.map((info, colIndex) => (
                 <TableCell key={colIndex} width={200}>
                   <View>
@@ -102,7 +103,11 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
                     <TouchableOpacity
                       style={styles.photoRow}
                       onPress={() => setShowImagePreview(true)}>
-                      <Icon name="visibility" size={20} color={colors.primary} />
+                      <Icon
+                        name="visibility"
+                        size={20}
+                        color={colors.primary}
+                      />
                       <StyledText
                         fontSize={fontSize.h5}
                         text="Punch In Photo"
@@ -112,7 +117,11 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
                     <TouchableOpacity
                       style={styles.photoRow}
                       onPress={() => setShowImagePreview(true)}>
-                      <Icon name="visibility" size={20} color={colors.primary} />
+                      <Icon
+                        name="visibility"
+                        size={20}
+                        color={colors.primary}
+                      />
                       <StyledText
                         fontSize={fontSize.h5}
                         text="Punch Out Photo"
@@ -169,7 +178,7 @@ const styles = StyleSheet.create({
   photoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: spacing.small,
+    marginTop: 5,
   },
   photoText: {
     marginLeft: spacing.small,

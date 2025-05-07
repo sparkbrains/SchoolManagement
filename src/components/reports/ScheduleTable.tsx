@@ -79,55 +79,72 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
 
               {detailedInfo.map((info, colIndex) => (
                 <TableCell key={colIndex} width={200}>
-                  <View>
-                    <StyledText
-                      fontSize={fontSize.h5}
-                      text={`In Time: ${info.inTime}`}
-                      style={styles.cellText}
-                    />
-                    <StyledText
-                      fontSize={fontSize.h5}
-                      text={`Out Time: ${info.outTime}`}
-                      style={styles.cellText}
-                    />
-                    <StyledText
-                      fontSize={fontSize.h5}
-                      text={`Late: ${info.late} mins`}
-                      style={styles.cellText}
-                    />
-                    <StyledText
-                      fontSize={fontSize.h5}
-                      text={`Early: ${info.early} mins`}
-                      style={styles.cellText}
-                    />
-                    <TouchableOpacity
-                      style={styles.photoRow}
-                      onPress={() => setShowImagePreview(true)}>
+                  <View style={styles.infoCard}>
+                    <View style={styles.infoRow}>
                       <Icon
-                        name="visibility"
-                        size={20}
+                        name="access-time"
+                        size={18}
                         color={colors.primary}
                       />
-                      <StyledText
-                        fontSize={fontSize.h5}
-                        text="Punch In Photo"
-                        style={styles.photoText}
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.photoRow}
-                      onPress={() => setShowImagePreview(true)}>
+                      <View style={styles.textAndIconContainer}>
+                        <StyledText
+                          fontSize={fontSize.h5}
+                          text={`In Time: ${info.inTime}`}
+                          style={styles.infoText}
+                        />
+                        <TouchableOpacity
+                          style={styles.iconButton}
+                          onPress={() => setShowImagePreview(true)}>
+                          <Icon
+                            name={'visibility'}
+                            size={16}
+                            color={colors.white}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+
+                    <View style={styles.infoRow}>
                       <Icon
-                        name="visibility"
-                        size={20}
+                        name="exit-to-app"
+                        size={18}
                         color={colors.primary}
                       />
+                      <View style={styles.textAndIconContainer}>
+                        <StyledText
+                          fontSize={fontSize.h5}
+                          text={`Out Time: ${info.outTime}`}
+                          style={styles.infoText}
+                        />
+                        <TouchableOpacity
+                          style={styles.iconButton}
+                          onPress={() => setShowImagePreview(true)}>
+                          <Icon
+                            name={'visibility'}
+                            size={16}
+                            color={colors.white}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+
+                    <View style={styles.infoRow}>
+                      <Icon name="timer-off" size={18} color="red" />
                       <StyledText
                         fontSize={fontSize.h5}
-                        text="Punch Out Photo"
-                        style={styles.photoText}
+                        text={`Late: ${info.late} mins`}
+                        style={[styles.infoText, {color: 'red'}]}
                       />
-                    </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.infoRow}>
+                      <Icon name="timer" size={18} color="green" />
+                      <StyledText
+                        fontSize={fontSize.h5}
+                        text={`Early: ${info.early} mins`}
+                        style={[styles.infoText, {color: 'green'}]}
+                      />
+                    </View>
                   </View>
                 </TableCell>
               ))}
@@ -149,6 +166,55 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
 const styles = StyleSheet.create({
   container: {
     marginTop: spacing.medium,
+  },
+  textAndIconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flex: 1,
+    alignItems: 'center',
+  },
+  iconButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 25,
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  infoCard: {
+    backgroundColor: colors.white,
+    borderRadius: 8,
+    padding: spacing.medium,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    width: '100%',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.small,
+  },
+  infoText: {
+    marginLeft: spacing.small,
+    fontSize: fontSize.h5,
+  },
+  photoButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing.small,
+    padding: spacing.small,
+    backgroundColor: colors.background,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  photoText: {
+    marginLeft: spacing.small,
+    color: colors.primary,
+    fontSize: fontSize.h5,
   },
   row: {
     flexDirection: 'row',
@@ -174,15 +240,6 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: fontSize.h4,
     fontWeight: 'bold',
-  },
-  photoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 5,
-  },
-  photoText: {
-    marginLeft: spacing.small,
-    color: colors.primary,
   },
 });
 

@@ -4,78 +4,58 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {colors, fontSize, spacing} from '../styles/base';
 import StyledText from './Text';
 import Icon from 'react-native-vector-icons/Ionicons';
+import moment from 'moment-timezone';
 
 interface DateTimePickerUtilityProps {
   mode?: 'date' | 'time';
-  allowRange?: boolean;
-  onConfirm: (selectedDates: {startDate: Date; endDate?: Date}) => void;
-  handleChange: (value: Date | null) => void;
-  selectedDate: Date | null;
+  handleChange: (value: string | null) => void;
+  selectedDate: string | null;
+  label: string;
+  disabled?: boolean;
+  minimumDate?: string | undefined;
+  maximumDate?: string | undefined;
 }
 
 const DateTimePickerUtility: React.FC<DateTimePickerUtilityProps> = ({
   mode = 'date',
-  allowRange = false,
-  onConfirm,
   handleChange,
   selectedDate,
+  label,
+  disabled = false,
+  minimumDate = undefined,
+  maximumDate = undefined,
 }) => {
   const [showPicker, setShowPicker] = useState(false);
 
-  const handleConfirm = (_: any, selectedDate?: Date) => {
-    setShowPicker(Platform.OS === 'ios');
-    if (selectedDate) {
-      handleChange(selectedDate);
+  const handleDateChange = (event: any, date?: Date) => {
+    if (event.nativeEvent.timestamp) {
+      const istDate = moment(event.nativeEvent.timestamp)
+        .tz('Asia/Kolkata')
+        .format('YYYY-MM-DD');
+
+      handleChange(istDate);
     }
+
+    setShowPicker(false);
   };
 
-  const formatDate = (date: Date | null): string => {
-    if (!date) return '';
-    return mode === 'date'
-      ? date.toLocaleDateString()
-      : mode === 'time'
-      ? date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
-      : date.toLocaleString();
-  };
+  console.log('selected date===', selectedDate);
 
   const getDisplayText = (): string => {
-    if (!selectedDate) {
-      return allowRange
-        ? isSelectingEndDate
-          ? 'Select End Date/Time'
-          : 'Select Start Date/Time'
-        : `Select ${mode === 'date' ? 'Date' : 'Time'}`;
-    }
-
-    if (allowRange) {
-      if (!selectedDate) {
-        if (isSelectingEndDate) {
-          return `${formatDate(selectedDate)} - Select End`;
-        }
-        return formatDate(selectedDate);
-      }
-      return `${formatDate(selectedDate)} - ${formatDate(endDate)}`;
-    }
-
-    return formatDate(selectedDate);
+    return selectedDate || 'Select Date';
   };
 
   const openPicker = () => {
-    if (allowRange && selectedDate) {
-      setIsSelectingEndDate(true);
-    } else {
-      setIsSelectingEndDate(false);
-    }
     setShowPicker(true);
   };
 
   const resetSelection = () => {
     handleChange(null);
-    setIsSelectingEndDate(false);
   };
 
   return (
     <View style={styles.container}>
+      <StyledText fontSize={fontSize.h5} style={styles.label} text={label} />
       <TouchableOpacity
         style={styles.pickerButton}
         onPress={openPicker}
@@ -85,26 +65,32 @@ const DateTimePickerUtility: React.FC<DateTimePickerUtilityProps> = ({
           fontSize={fontSize.h4}
           text={getDisplayText()}
         />
+        {selectedDate && (
+          <TouchableOpacity
+            onPress={resetSelection}
+            hitSlop={{top: 10, right: 10, bottom: 10, left: 10}}>
+            <Icon name="close" size={20} />
+          </TouchableOpacity>
+        )}
       </TouchableOpacity>
-
-      {selectedDate && (
-        <TouchableOpacity
-          style={styles.resetButton}
-          onPress={resetSelection}
-          hitSlop={{top: 10, right: 10, bottom: 10, left: 10}}>
-          <Icon name="close" size={20} />
-        </TouchableOpacity>
-      )}
 
       {showPicker && (
         <DateTimePicker
-          value={isSelectingEndDate && selectedDate ? selectedDate : new Date()}
+          value={
+            selectedDate
+              ? moment(selectedDate, 'YYYY-MM-DD').toDate()
+              : new Date()
+          }
           minimumDate={
-            isSelectingEndDate && selectedDate ? selectedDate : undefined
+            minimumDate ? moment(minimumDate, 'YYYY-MM-DD').toDate() : undefined
+          }
+          maximumDate={
+            maximumDate ? moment(maximumDate, 'YYYY-MM-DD').toDate() : undefined
           }
           mode={mode}
           display={Platform.OS === 'ios' ? 'inline' : 'default'}
-          onChange={handleConfirm}
+          onChange={handleDateChange}
+          disabled={disabled}
         />
       )}
     </View>
@@ -116,6 +102,9 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
   },
+  label: {
+    marginVertical: spacing.small,
+  },
   pickerButton: {
     backgroundColor: colors.background,
     borderWidth: 1,
@@ -124,25 +113,15 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.small,
     paddingHorizontal: spacing.medium,
     minHeight: 48,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   buttonText: {
     color: colors.textPrimary,
   },
   placeholderText: {
     color: colors.textSecondary,
-  },
-  resetButton: {
-    position: 'absolute',
-    right: spacing.small,
-    top: '50%',
-    transform: [{translateY: -12}],
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 

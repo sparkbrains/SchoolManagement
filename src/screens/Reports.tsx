@@ -12,8 +12,8 @@ import StyledText from '../components/Text';
 type FilterType = 'Today' | 'This Week' | 'This Month' | 'Custom';
 const filters: FilterType[] = ['Today', 'This Week', 'This Month', 'Custom'];
 type CustomDatePicker = {
-  startDate: Date | null;
-  endDate: Date | null;
+  startDate: string | null;
+  endDate: string | null;
 };
 
 const Reports: React.FC = () => {
@@ -56,18 +56,25 @@ const Reports: React.FC = () => {
           <View style={styles.datePickersContainer}>
             <View style={styles.datePicker}>
               <DateTimePickerUtility
-                onConfirm={() => {}}
                 handleChange={value => handleDateChange('startDate', value)}
                 selectedDate={selectedDates?.startDate}
                 label="Start Date"
+                maximumDate={
+                  selectedDates?.endDate ? selectedDates?.endDate : undefined
+                }
               />
             </View>
             <View style={styles.datePicker}>
               <DateTimePickerUtility
-                onConfirm={() => {}}
                 handleChange={value => handleDateChange('endDate', value)}
                 selectedDate={selectedDates?.endDate}
                 label="End Date"
+                disabled={!selectedDates?.startDate}
+                minimumDate={
+                  selectedDates?.startDate
+                    ? selectedDates?.startDate
+                    : undefined
+                }
               />
             </View>
           </View>

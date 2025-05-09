@@ -39,8 +39,6 @@ const DateTimePickerUtility: React.FC<DateTimePickerUtilityProps> = ({
     setShowPicker(false);
   };
 
-  console.log('selected date===', selectedDate);
-
   const getDisplayText = (): string => {
     return selectedDate || 'Select Date';
   };

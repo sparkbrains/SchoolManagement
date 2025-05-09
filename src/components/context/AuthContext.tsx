@@ -25,14 +25,12 @@ const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
 
   const toggleLoggedInStatus = () => {
     setIsLoggedIn(prevState => !prevState);
-    // setIsLoggedIn(true);
   };
 
   useEffect(() => {
     const checkLoginStatus = async () => {
       const token = await AsyncStorage.getItem('userToken');
-      // setIsLoggedIn(!!token);
-      setIsLoggedIn(true);
+      setIsLoggedIn(!!token);
       setIsLoading(false);
     };
 

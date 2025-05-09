@@ -2,9 +2,10 @@ import React, {useState} from 'react';
 import {View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
 import {colors, fontSize, spacing} from '../../styles/base';
 import StyledText from '../Text';
-import {TimeTable} from '../../types/types';
+import {ReportData, TimeTable} from '../../types/types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import UploadedImage from '../home/UploadedImage';
+import moment from 'moment';
 
 const Table = ({children}: {children: React.ReactNode}) => {
   return (
@@ -43,7 +44,7 @@ const TableCell = ({
 };
 
 const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
-  const [showImagePreview, setShowImagePreview] = useState(false);
+  const [showImagePreview, setShowImagePreview] = useState('');
   return (
     <>
       <Table>
@@ -57,7 +58,7 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
               />
             </TableCell>
             {columns.map((slot, index) => (
-              <TableCell key={index} width={200} isHeader>
+              <TableCell key={index} width={240} isHeader>
                 <StyledText
                   style={[styles.cellText, styles.headerText]}
                   text={slot}
@@ -77,87 +78,135 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
                 />
               </TableCell>
 
-              {detailedInfo.map((info, colIndex) => (
-                <TableCell key={colIndex} width={200}>
-                  <View style={styles.infoCard}>
-                    <View style={styles.infoRow}>
-                      <Icon
-                        name="access-time"
-                        size={18}
-                        color={colors.primary}
-                      />
-                      <View style={styles.textAndIconContainer}>
+              {detailedInfo?.[date]?.map(
+                (info: ReportData, colIndex: number) => (
+                  <TableCell key={colIndex} width={240}>
+                    <View style={styles.infoCard}>
+                      <View style={styles.infoRow}>
+                        <Icon
+                          name="timer-off"
+                          size={18}
+                          color={colors.primary}
+                        />
                         <StyledText
                           fontSize={fontSize.h5}
-                          text={`In Time: ${info.inTime}`}
-                          style={styles.infoText}
+                          text={`Subject: ${info?.time_slot?.subject?.name}`}
+                          style={[styles.infoText, {color: 'red'}]}
                         />
-                        <TouchableOpacity
-                          style={styles.iconButton}
-                          onPress={() => setShowImagePreview(true)}>
-                          <Icon
-                            name={'visibility'}
-                            size={16}
-                            color={colors.white}
-                          />
-                        </TouchableOpacity>
                       </View>
-                    </View>
+                      <View style={styles.infoRow}>
+                        <Icon
+                          name="access-time"
+                          size={18}
+                          color={colors.primary}
+                        />
+                        <View style={styles.textAndIconContainer}>
+                          <StyledText
+                            fontSize={fontSize.h5}
+                            text={`In Time: ${moment(
+                              info?.in_time,
+                              'HH:mm',
+                            ).format('hh:mmA')}`}
+                            style={styles.infoText}
+                          />
+                          <TouchableOpacity
+                            style={styles.iconButton}
+                            onPress={() =>
+                              setShowImagePreview(info?.punch_in_photo)
+                            }>
+                            <Icon
+                              name={'visibility'}
+                              size={16}
+                              color={colors.white}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
 
-                    <View style={styles.infoRow}>
-                      <Icon
-                        name="exit-to-app"
-                        size={18}
-                        color={colors.primary}
-                      />
-                      <View style={styles.textAndIconContainer}>
+                      <View style={styles.infoRow}>
+                        <Icon
+                          name="exit-to-app"
+                          size={18}
+                          color={colors.primary}
+                        />
+                        <View style={styles.textAndIconContainer}>
+                          <StyledText
+                            fontSize={fontSize.h5}
+                            text={`Out Time: ${moment(
+                              info?.out_time,
+                              'HH:mm',
+                            ).format('hh:mmA')}`}
+                            style={styles.infoText}
+                          />
+                          <TouchableOpacity
+                            style={styles.iconButton}
+                            onPress={() =>
+                              setShowImagePreview(info?.punch_out_photo)
+                            }>
+                            <Icon
+                              name={'visibility'}
+                              size={16}
+                              color={colors.white}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+
+                      <View style={styles.infoRow}>
+                        <Icon name="timer-off" size={18} color="red" />
                         <StyledText
                           fontSize={fontSize.h5}
-                          text={`Out Time: ${info.outTime}`}
-                          style={styles.infoText}
+                          text={`Late: ${info?.late_minutes} mins`}
+                          style={[styles.infoText, {color: 'red'}]}
                         />
-                        <TouchableOpacity
-                          style={styles.iconButton}
-                          onPress={() => setShowImagePreview(true)}>
-                          <Icon
-                            name={'visibility'}
-                            size={16}
-                            color={colors.white}
-                          />
-                        </TouchableOpacity>
+                      </View>
+
+                      <View style={styles.infoRow}>
+                        <Icon name="timer" size={18} color="green" />
+                        <StyledText
+                          fontSize={fontSize.h5}
+                          text={`Early: ${info?.early_minutes} mins`}
+                          style={[styles.infoText, {color: 'green'}]}
+                        />
+                      </View>
+
+                      <View style={styles.infoRow}>
+                        <Icon name="timer" size={18} color="green" />
+                        <StyledText
+                          fontSize={fontSize.h5}
+                          text={`Early reason: ${
+                            info?.early_reason && info.early_reason.length > 15
+                              ? `${info.early_reason.substring(0, 15)}...`
+                              : info?.early_reason || ''
+                          }`}
+                          style={[styles.infoText, {color: 'green'}]}
+                        />
+                      </View>
+
+                      <View style={styles.infoRow}>
+                        <Icon name="timer-off" size={18} color="red" />
+                        <StyledText
+                          fontSize={fontSize.h5}
+                          text={`Late reason: ${
+                            info?.late_reason && info.late_reason.length > 15
+                              ? `${info.late_reason.substring(0, 15)}...`
+                              : info?.late_reason || ''
+                          }`}
+                          style={[styles.infoText, {color: 'red'}]}
+                        />
                       </View>
                     </View>
-
-                    <View style={styles.infoRow}>
-                      <Icon name="timer-off" size={18} color="red" />
-                      <StyledText
-                        fontSize={fontSize.h5}
-                        text={`Late: ${info.late} mins`}
-                        style={[styles.infoText, {color: 'red'}]}
-                      />
-                    </View>
-
-                    <View style={styles.infoRow}>
-                      <Icon name="timer" size={18} color="green" />
-                      <StyledText
-                        fontSize={fontSize.h5}
-                        text={`Early: ${info.early} mins`}
-                        style={[styles.infoText, {color: 'green'}]}
-                      />
-                    </View>
-                  </View>
-                </TableCell>
-              ))}
+                  </TableCell>
+                ),
+              )}
             </TableRow>
           ))}
         </View>
       </Table>
       <UploadedImage
-        visible={showImagePreview}
-        onRequestClose={() => setShowImagePreview(false)}
-        imageUrl={
-          'https://images.unsplash.com/photo-1742522314620-a41c790acbdb?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-        }
+        visible={!!showImagePreview}
+        onRequestClose={() => setShowImagePreview('')}
+        imageUrl={showImagePreview}
       />
     </>
   );
@@ -172,6 +221,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flex: 1,
     alignItems: 'center',
+    gap: 4,
   },
   iconButton: {
     backgroundColor: colors.primary,

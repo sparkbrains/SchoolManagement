@@ -152,7 +152,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     }
 
     Fetch('teachers/today-classes').then((res: any) => {
-      console.log('response====', res);
       if (res.status) {
         if (!res?.data?.data?.length) {
           setTimerRunning(false);

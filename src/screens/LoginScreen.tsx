@@ -86,8 +86,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
         },
         {method: 'post'},
       ).then(res => {
-        console.log("res===", res);
-        
         if (res.status) {
           AsyncStorage.setItem('userToken', res?.data?.access);
           toggleLoggedInStatus();

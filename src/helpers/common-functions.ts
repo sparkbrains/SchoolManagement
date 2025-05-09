@@ -1,5 +1,6 @@
 import moment from 'moment';
 import {Platform, ToastAndroid} from 'react-native';
+import {ReportData} from '../types/types';
 
 export const getKeyboardBehaviour = () => {
   return Platform.OS === 'ios' ? 'padding' : 'height';
@@ -45,4 +46,49 @@ export const getCurrentDayFromDate = (dateString: string): string => {
     console.error('Error parsing date string:', error);
     return '';
   }
+};
+
+export const generateColumns = (data: ReportData[]): string[] => {
+  let arr: string[] = [];
+
+  data.map(item => {
+    let convertedFormat = `${moment(
+      item?.time_slot?.start_time,
+      'HH:mm',
+    ).format('hh:mm A')} - ${moment(item?.time_slot?.end_time, 'HH:mm').format(
+      'hh:mm A',
+    )}`;
+    arr.push(convertedFormat);
+  });
+
+  return arr;
+};
+
+export const generateRows = (data: ReportData[]): string[] => {
+  const dateSet = new Set<string>();
+
+  data.forEach(item => {
+    if (item?.date) {
+      dateSet.add(item.date);
+    }
+  });
+
+  return Array.from(dateSet);
+};
+
+export const generateTableData = (data: ReportData[]) => {
+  const obj: Record<string, any[]> = {};
+
+  data.forEach(item => {
+    const key = item?.date;
+    if (!key) return;
+
+    if (!obj[key]) {
+      obj[key] = [];
+    }
+
+    obj[key].push(item);
+  });
+
+  return obj;
 };

@@ -68,6 +68,7 @@ export default function Fetch(
   };
 
   const fetch = async (): Promise<FetchResponse> => {
+    console.log('url===', baseURL + endPoint);
     try {
       const headers = await FetchHeader();
       return axios[method](

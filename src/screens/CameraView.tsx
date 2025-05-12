@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useEffect, useLayoutEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -124,7 +124,8 @@ const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
     }
   };
 
-  const handleClose = () => {
+  const handleClose = async () => {
+    await new Promise(resolve => setTimeout(resolve, 500));
     navigation.goBack();
   };
 
@@ -157,10 +158,14 @@ const CameraView: React.FC<CameraScreenProps> = ({route, navigation}) => {
       ).then((res: any) => {
         setIsUploading(false);
         if (res.status) {
+          setShowReasonModal(false);
+          setIsLateArrival(false);
+          setIsEarlyLeave(false);
+          setReason('');
           showToast(`Punch ${type === 'PUNCH_IN' ? 'in' : 'out'} successful`);
           setCapturedPhoto(null);
           route.params.onGoBack(type);
-          navigation.goBack();
+          handleClose();
         } else {
           if (res?.is_late || res?.is_early) {
             calculateTimeScenarios();

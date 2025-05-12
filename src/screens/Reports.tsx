@@ -11,6 +11,7 @@ import Fetch from '../helpers/fetch';
 import {ReportTypes} from '../types/types';
 import ScreenLoader from '../components/ScreenLoader';
 import {
+  convertMinutesToHoursAndMinutes,
   generateColumns,
   generateRows,
   generateTableData,
@@ -43,13 +44,13 @@ const Reports: React.FC = () => {
   const [data, setData] = useState<ReportTypes>(initialReportState);
   const [columns, setColumns] = useState<string[]>([]);
   const [rows, setRows] = useState<string[]>([]);
-  const [tableData, setTableData] = useState<any>({}); // TODO
+  const [tableData, setTableData] = useState({});
 
   // today, this_week, this_month, custom
   const fetchData = (
     filterType: string,
-    startDate: Date | null = null,
-    endDate: Date | null = null,
+    startDate: string | null = null,
+    endDate: string | null = null,
   ) => {
     setIsLoading(true);
     let params = '';
@@ -63,7 +64,7 @@ const Reports: React.FC = () => {
       if (res.status) {
         let arr = generateColumns(res?.data?.data);
         let arr2 = generateRows(res?.data?.data);
-        let tableData = generateTableData(res?.data?.data);
+        let tableData = generateTableData(res?.data?.data, arr);
 
         setTableData(tableData);
         setColumns(arr);
@@ -84,16 +85,16 @@ const Reports: React.FC = () => {
       case 'This Month':
         fetchData('this_month');
         break;
-      // case 'Custom':
-      //   fetchData('custom');
-      //   break;
+      case 'Custom':
+        setData(initialReportState);
+        break;
     }
     setSelectedFilter(filter);
   };
 
   const handleDateChange = (
     type: 'startDate' | 'endDate',
-    value: Date | null,
+    value: string | null,
   ) => {
     if (selectedDates?.startDate && type === 'endDate' && value) {
       fetchData('custom', selectedDates?.startDate, value);
@@ -160,59 +161,85 @@ const Reports: React.FC = () => {
               </View>
             )}
 
-            <View style={styles.cardContainer}>
-              <View style={styles.cardWrapper}>
-                <Card
-                  title={'Total Overtime'}
-                  time={data?.summary?.total_overtime_minutes}
-                  description={'Extra time spent'}
-                  iconName={'access-time'}
-                />
+            {data?.data && data?.data.length > 0 && (
+              <View style={styles.cardContainer}>
+                <View style={styles.cardWrapper}>
+                  <Card
+                    title={'Total Overtime'}
+                    time={
+                      data?.summary?.total_overtime_minutes !== null
+                        ? convertMinutesToHoursAndMinutes(
+                            data?.summary?.total_overtime_minutes?.toString(),
+                          )
+                        : 'N/A'
+                    }
+                    description={'Extra time spent'}
+                    iconName={'access-time'}
+                  />
+                </View>
+                <View style={styles.cardWrapper}>
+                  <Card
+                    title={'Total Short Time'}
+                    time={
+                      data?.summary?.total_short_time_minutes !== null
+                        ? convertMinutesToHoursAndMinutes(
+                            data?.summary?.total_short_time_minutes?.toString(),
+                          )
+                        : 'N/A'
+                    }
+                    description={'Less time spent'}
+                    iconName={'timer-off'}
+                  />
+                </View>
+                <View style={styles.cardWrapper}>
+                  <Card
+                    title={'Total Classes'}
+                    time={data?.summary?.total_classes}
+                    description={'Classes attended'}
+                    iconName={'class'}
+                  />
+                </View>
+                <View style={styles.cardWrapper}>
+                  <Card
+                    title={'Total Time Spent'}
+                    time={
+                      data?.summary?.total_time_spent_minutes !== null
+                        ? convertMinutesToHoursAndMinutes(
+                            data?.summary?.total_time_spent_minutes?.toString(),
+                          )
+                        : 'N/A'
+                    }
+                    description={'Overall time spent'}
+                    iconName={'schedule'}
+                  />
+                </View>
               </View>
-              <View style={styles.cardWrapper}>
-                <Card
-                  title={'Total Short Time'}
-                  time={data?.summary?.total_short_time_minutes}
-                  description={'Less time spent'}
-                  iconName={'timer-off'}
-                />
-              </View>
-              <View style={styles.cardWrapper}>
-                <Card
-                  title={'Total Classes'}
-                  time={data?.summary?.total_classes}
-                  description={'Classes attended'}
-                  iconName={'class'}
-                />
-              </View>
-              <View style={styles.cardWrapper}>
-                <Card
-                  title={'Total Time Spent'}
-                  time={data?.summary?.total_time_spent_minutes}
-                  description={'Overall time spent'}
-                  iconName={'schedule'}
-                />
-              </View>
-            </View>
+            )}
 
-            <StyledText
-              fontSize={fontSize.h4}
-              style={styles.detailedReportText}
-              text="Detailed Report"
-            />
+            {data?.data && data?.data.length > 0 ? (
+              <>
+                <StyledText
+                  fontSize={fontSize.h4}
+                  style={styles.detailedReportText}
+                  text="Detailed Report"
+                />
 
-            <ScheduleTable
-              columns={columns}
-              rows={rows}
-              detailedInfo={tableData}
-            />
-
-            {/* <View style={styles.noDataText}>
-              <StyledText
-                fontSize={fontSize.h4}
-                text="No data to show for this day"
-              />
-            </View> */}
+                <ScheduleTable
+                  columns={columns}
+                  rows={rows}
+                  detailedInfo={tableData}
+                />
+              </>
+            ) : (
+              <View style={styles.noDataText}>
+                <StyledText
+                  fontSize={fontSize.h4}
+                  text="No report available for the chosen filters. Please modify your search
+          and try again."
+                  style={styles.noReport}
+                />
+              </View>
+            )}
           </>
         )}
       </ScrollView>
@@ -231,6 +258,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '90%',
+  },
+  noReport: {
+    textAlign: 'center',
+    padding: spacing.small,
   },
   datePicker: {
     width: '48%',

@@ -4,7 +4,7 @@ import StyledText from '../Text';
 
 type Props = {
   title: string;
-  time: number;
+  time: string | number;
   description: string;
   iconName: string;
 };

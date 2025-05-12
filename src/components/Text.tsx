@@ -2,7 +2,7 @@ import React from 'react';
 import {Text, TextProps, TextStyle, StyleProp} from 'react-native';
 
 interface Props extends TextProps {
-  text: string;
+  text: string | number;
   fontSize?: number;
   style?: StyleProp<TextStyle>;
 }

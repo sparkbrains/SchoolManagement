@@ -78,10 +78,19 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
                 />
               </TableCell>
 
-              {detailedInfo?.[date]?.map(
-                (info: ReportData, colIndex: number) => (
+              {detailedInfo?.[date]?.map((info: ReportData, colIndex: number) =>
+                info ? (
                   <TableCell key={colIndex} width={240}>
                     <View style={styles.infoCard}>
+                      <View style={styles.infoRow}>
+                        <Icon name="book" size={18} color={colors.primary} />
+                        <StyledText
+                          fontSize={fontSize.h5}
+                          text={`Subject: ${info?.time_slot?.subject?.name}`}
+                          style={[styles.infoText]}
+                        />
+                      </View>
+
                       <View style={styles.infoRow}>
                         <Icon
                           name="timer-off"
@@ -90,8 +99,8 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
                         />
                         <StyledText
                           fontSize={fontSize.h5}
-                          text={`Subject: ${info?.time_slot?.subject?.name}`}
-                          style={[styles.infoText, {color: 'red'}]}
+                          text={`Total Time Spent: ${info?.time_spent} mins.`}
+                          style={[styles.infoText]}
                         />
                       </View>
                       <View style={styles.infoRow}>
@@ -156,45 +165,70 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
                         <Icon name="timer-off" size={18} color="red" />
                         <StyledText
                           fontSize={fontSize.h5}
-                          text={`Late: ${info?.late_minutes} mins`}
-                          style={[styles.infoText, {color: 'red'}]}
+                          text={`Arrived Late By: ${info?.late?.late_punch_in} mins`}
+                          style={[styles.infoText]}
                         />
                       </View>
 
                       <View style={styles.infoRow}>
-                        <Icon name="timer" size={18} color="green" />
+                        <Icon name="timer" size={18} color="red" />
                         <StyledText
                           fontSize={fontSize.h5}
-                          text={`Early: ${info?.early_minutes} mins`}
-                          style={[styles.infoText, {color: 'green'}]}
+                          text={`Left Late By: ${info?.late?.late_punch_out} mins`}
+                          style={[styles.infoText]}
                         />
                       </View>
 
                       <View style={styles.infoRow}>
-                        <Icon name="timer" size={18} color="green" />
+                        <Icon name="timer" size={18} color="red" />
                         <StyledText
                           fontSize={fontSize.h5}
-                          text={`Early reason: ${
-                            info?.early_reason && info.early_reason.length > 15
-                              ? `${info.early_reason.substring(0, 15)}...`
-                              : info?.early_reason || ''
+                          text={`Left Early By: ${info?.early_punch_out} mins`}
+                          style={[styles.infoText]}
+                        />
+                      </View>
+
+                      <View style={styles.infoRow}>
+                        <Icon name="comment" size={18} color="red" />
+                        <StyledText
+                          fontSize={fontSize.h5}
+                          // text={`Reason for Late Punch In: ${
+                          //   info?.early_reason && info.early_reason.length > 15
+                          //     ? `${info.early_reason.substring(0, 15)}...`
+                          //     : info?.early_reason || ''
+                          // }`}
+                          text={`Reason for Late Punch In: ${
+                            info?.early_reason || 'N/A'
                           }`}
-                          style={[styles.infoText, {color: 'green'}]}
+                          style={[styles.infoText]}
                         />
                       </View>
 
                       <View style={styles.infoRow}>
-                        <Icon name="timer-off" size={18} color="red" />
+                        <Icon name="comment" size={18} color="red" />
                         <StyledText
                           fontSize={fontSize.h5}
-                          text={`Late reason: ${
-                            info?.late_reason && info.late_reason.length > 15
-                              ? `${info.late_reason.substring(0, 15)}...`
-                              : info?.late_reason || ''
+                          // text={`Reason for Late/Early Punch Out: ${
+                          //   info?.late_reason && info.late_reason.length > 15
+                          //     ? `${info.late_reason.substring(0, 15)}...`
+                          //     : info?.late_reason || ''
+                          // }`}
+                          text={`Reason for Late/Early Punch Out: ${
+                            info?.late_reason || 'N/A'
                           }`}
-                          style={[styles.infoText, {color: 'red'}]}
+                          style={[styles.infoText]}
                         />
                       </View>
+                    </View>
+                  </TableCell>
+                ) : (
+                  <TableCell key={colIndex} width={240}>
+                    <View style={[styles.infoCard]}>
+                      <StyledText
+                        style={styles.textCenter}
+                        text={'N/A'}
+                        fontSize={fontSize.h5}
+                      />
                     </View>
                   </TableCell>
                 ),
@@ -215,6 +249,9 @@ const ScheduleTable: React.FC<TimeTable> = ({columns, rows, detailedInfo}) => {
 const styles = StyleSheet.create({
   container: {
     marginTop: spacing.medium,
+  },
+  textCenter: {
+    textAlign: 'center',
   },
   textAndIconContainer: {
     flexDirection: 'row',

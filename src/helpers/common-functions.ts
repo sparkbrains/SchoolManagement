@@ -49,7 +49,7 @@ export const getCurrentDayFromDate = (dateString: string): string => {
 };
 
 export const generateColumns = (data: ReportData[]): string[] => {
-  let arr: string[] = [];
+  let uniqueSet: Set<string> = new Set();
 
   data.map(item => {
     let convertedFormat = `${moment(
@@ -58,10 +58,11 @@ export const generateColumns = (data: ReportData[]): string[] => {
     ).format('hh:mm A')} - ${moment(item?.time_slot?.end_time, 'HH:mm').format(
       'hh:mm A',
     )}`;
-    arr.push(convertedFormat);
+
+    uniqueSet.add(convertedFormat);
   });
 
-  return arr;
+  return Array.from(uniqueSet);
 };
 
 export const generateRows = (data: ReportData[]): string[] => {
@@ -76,7 +77,7 @@ export const generateRows = (data: ReportData[]): string[] => {
   return Array.from(dateSet);
 };
 
-export const generateTableData = (data: ReportData[]) => {
+export const generateTableData = (data: ReportData[], arr: string[]) => {
   const obj: Record<string, any[]> = {};
 
   data.forEach(item => {
@@ -84,11 +85,27 @@ export const generateTableData = (data: ReportData[]) => {
     if (!key) return;
 
     if (!obj[key]) {
-      obj[key] = [];
+      obj[key] = new Array(arr.length).fill(null);
     }
 
-    obj[key].push(item);
+    let convertedFormat =
+      moment(item?.time_slot?.start_time, 'HH:mm').format('hh:mm A') +
+      ' - ' +
+      moment(item?.time_slot?.end_time, 'HH:mm').format('hh:mm A');
+
+    const index = arr.indexOf(convertedFormat);
+    if (index !== -1) {
+      obj[key][index] = item;
+    }
   });
 
   return obj;
 };
+
+export function convertMinutesToHoursAndMinutes(minutes: string) {
+  const duration = moment.duration(minutes, 'minutes');
+  const hours = Math.floor(duration.asHours());
+  const mins = duration.minutes();
+
+  return `${hours}h ${mins}min`;
+}

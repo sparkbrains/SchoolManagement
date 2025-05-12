@@ -1,7 +1,7 @@
 import {
   createDrawerNavigator,
+  DrawerContentComponentProps,
   DrawerContentScrollView,
-  DrawerItem,
   DrawerItemList,
 } from '@react-navigation/drawer';
 import {RootStackParamList} from '../../types/screen-props';
@@ -11,14 +11,16 @@ import Reports from '../../screens/Reports';
 
 const Drawer = createDrawerNavigator<RootStackParamList>();
 
-function CustomDrawerContent(props) {
+function CustomDrawerContent(props: DrawerContentComponentProps) {
+  const {state, ...rest} = props;
+  const newState = {
+    ...state,
+    routes: state.routes.filter(route => route.name !== 'CameraView'),
+  };
+
   return (
     <DrawerContentScrollView {...props}>
-      <DrawerItemList {...props} />
-      {/* <DrawerItem
-        label="Close drawer"
-        onPress={() => props.navigation.closeDrawer()}
-      /> */}
+      <DrawerItemList {...rest} state={newState} />
     </DrawerContentScrollView>
   );
 }
@@ -26,7 +28,7 @@ function CustomDrawerContent(props) {
 function DrawerNavigator(): React.JSX.Element {
   return (
     <Drawer.Navigator
-      drawerContent={props => <CustomDrawerContent {...props} />}
+      // drawerContent={props => <CustomDrawerContent {...props} />}
       initialRouteName="Home"
       screenOptions={({route}) => ({
         swipeEnabled: route.name !== 'CameraView',
@@ -35,6 +37,14 @@ function DrawerNavigator(): React.JSX.Element {
       })}>
       <Drawer.Screen name="Home" component={HomeScreen} />
       <Drawer.Screen name="Reports" component={Reports} />
+      <Drawer.Screen
+        name="CameraView"
+        component={CameraView}
+        options={{
+          drawerItemStyle: {display: 'none'},
+          headerShown: false,
+        }}
+      />
     </Drawer.Navigator>
   );
 }

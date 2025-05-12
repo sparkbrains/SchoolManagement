@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
-  Text,
 } from 'react-native';
 import StyledText from '../Text';
 import Button from '../button';

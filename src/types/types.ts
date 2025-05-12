@@ -1,12 +1,14 @@
+export type DetailedInfo = {
+  inTime: string;
+  outTime: string;
+  late: string;
+  early: string;
+};
+
 export type TimeTable = {
   columns: string[];
   rows: string[];
-  detailedInfo: {
-    inTime: string;
-    outTime: string;
-    late: string;
-    early: string;
-  }[];
+  detailedInfo: DetailedInfo[];
 };
 
 export type ReportData = {
@@ -15,8 +17,8 @@ export type ReportData = {
     name: string;
     section: string;
   };
+  time_spent: number;
   absent_reason: '';
-  early_minutes: '';
   early_reason: '';
   in_time: '';
   date: '';
@@ -45,6 +47,11 @@ export type ReportData = {
       name: string;
     };
   };
+  late: {
+    late_punch_in: string;
+    late_punch_out: string;
+  };
+  early_punch_out: string;
 };
 
 export type ReportSummary = {

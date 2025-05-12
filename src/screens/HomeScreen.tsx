@@ -25,8 +25,8 @@ import {
 import ScreenLoader from '../components/ScreenLoader';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import CustomModal from '../components/CustomModal';
-import {CommonActions} from '@react-navigation/native';
 import SwipeableComponent from '../components/SwipeableView';
+import {useAuth} from '../components/context/AuthContext';
 
 type ClassType = {
   class_info: {
@@ -94,6 +94,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [dateType, setDateType] = useState<'currentDay' | 'previous' | 'next'>(
     'currentDay',
   );
+
+  const {toggleLoggedInStatus} = useAuth();
 
   const popupShown = useRef(false);
 
@@ -233,12 +235,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('userToken');
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{name: 'Login'}],
-      }),
-    );
+    // navigation.dispatch(
+    //   CommonActions.reset({
+    //     index: 0,
+    //     routes: [{name: 'Login'}],
+    //   }),
+    // );
+    toggleLoggedInStatus();
   };
 
   const handleNavigate = async (
@@ -307,7 +310,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           </View>
         )}
 
-        <View style={styles.logoContainer}>
+        <View
+          style={[
+            styles.logoContainer,
+            {padding: timerRunning ? spacing.xLarge + 32 : spacing.medium},
+          ]}>
           <Image
             source={
               data?.teacher?.school?.logo
@@ -324,6 +331,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
             style={styles.schoolName}
           />
         </View>
+
         <StyledText
           text={`Welcome, ${
             data?.teacher?.first_name + ' ' + data?.teacher?.last_name
@@ -503,7 +511,6 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    padding: spacing.large,
   },
   logo: {
     width: 150,

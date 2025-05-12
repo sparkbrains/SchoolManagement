@@ -28,7 +28,7 @@ const DateTimePickerUtility: React.FC<DateTimePickerUtilityProps> = ({
   const [showPicker, setShowPicker] = useState(false);
 
   const handleDateChange = (event: any, date?: Date) => {
-    if (event.nativeEvent.timestamp) {
+    if (event.type === 'set' && event.nativeEvent.timestamp) {
       const istDate = moment(event.nativeEvent.timestamp)
         .tz('Asia/Kolkata')
         .format('YYYY-MM-DD');
@@ -83,7 +83,9 @@ const DateTimePickerUtility: React.FC<DateTimePickerUtilityProps> = ({
             minimumDate ? moment(minimumDate, 'YYYY-MM-DD').toDate() : undefined
           }
           maximumDate={
-            maximumDate ? moment(maximumDate, 'YYYY-MM-DD').toDate() : undefined
+            maximumDate
+              ? moment(maximumDate, 'YYYY-MM-DD').toDate()
+              : new Date()
           }
           mode={mode}
           display={Platform.OS === 'ios' ? 'inline' : 'default'}
